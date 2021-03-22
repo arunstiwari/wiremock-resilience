@@ -2,7 +2,7 @@
   "id" : "8f129fa1-4a01-4b68-bb90-4348430fe0ef",
   "name" : "orders_customers_cust-2232",
   "request" : {
-    "url" : "/orders/customers/cust-223432",
+    "url" : "/orders/customers/cust-2232",
     "method" : "GET"
   },
   "response" : {

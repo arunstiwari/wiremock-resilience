@@ -1,47 +1,122 @@
 package com.tekmentor.resiliencectf.faults;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.client.WireMock;
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
+import com.github.tomakehurst.wiremock.http.Fault;
+import com.github.tomakehurst.wiremock.http.trafficlistener.ConsoleNotifyingWiremockNetworkTrafficListener;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static io.restassured.RestAssured.given;
 
-//@SpringBootTest
 public class FaultCTFTest {
 
     WireMockServer wireMockServer;
 
+
     @BeforeEach
     public void setup(){
-        wireMockServer = new WireMockServer(8092);
+
+        WireMockConfiguration wireMockConfiguration = wireMockConfig()
+                .networkTrafficListener(new ConsoleNotifyingWiremockNetworkTrafficListener())
+                .port(8092);
+        wireMockServer = new WireMockServer(wireMockConfiguration);
+        WireMock.configureFor("localhost", 8092);
 
         wireMockServer.start();
-//        stubFor(any(anyUrl()).willReturn(aResponse().proxiedFrom("http://localhost:8084/")));
+
+    }
+
+    @Test
+    public void orderServiceRespondingWithEmptyResponse(){
         stubFor(
-                get("http://localhost:8092/orders/customers/cust-2232")
+                get(urlEqualTo("/orders/customers/cust-2232"))
                         .willReturn(aResponse()
-                                .withStatus(500)
-                                .withBody("{\"error\": \"Server error\"}")
+                                .withFault(Fault.EMPTY_RESPONSE)
                                 .withHeader("Content-Type", "application/json")
                         )
         );
-    }
-//http://localhost:8092/orders/customers/{customerId}
-    //"http://localhost:8092/orders/customers/cust-2232"
-    @Test
-    public void customerServiceUnavailable(){
 
+        executeRestfulEndpointForDependentOrderService();
+    }
+
+
+
+    @Test
+    public void orderServiceNotAvailable(){
+        stubFor(
+                get(urlEqualTo("/orders/customers/cust-2232"))
+                        .willReturn(serviceUnavailable()
+                                .withHeader("Content-Type", "application/json")
+                        )
+        );
+
+        executeRestfulEndpointForDependentOrderService();
+    }
+
+    @Test
+    public void callingOrderServiceThrowsServerError(){
+        stubFor(
+                get(urlEqualTo("/orders/customers/cust-2232"))
+                        .willReturn(serverError()
+                                .withHeader("Content-Type", "application/json")
+                        )
+        );
+
+        executeRestfulEndpointForDependentOrderService();
+    }
+
+    @Test
+    public void orderServiceRespondingWithMalformedResponse(){
+        stubFor(
+                get(urlEqualTo("/orders/customers/cust-2232"))
+                        .willReturn(aResponse()
+                                .withFault(Fault.MALFORMED_RESPONSE_CHUNK)
+                                .withHeader("Content-Type", "application/json")
+                        )
+        );
+
+        executeRestfulEndpointForDependentOrderService();
+    }
+
+    @Test
+    public void orderServiceRespondingWithConnectionReset(){
+        stubFor(
+                get(urlEqualTo("/orders/customers/cust-2232"))
+                        .willReturn(aResponse()
+                                .withFault(Fault.CONNECTION_RESET_BY_PEER)
+                                .withHeader("Content-Type", "application/json")
+                        )
+        );
+
+        executeRestfulEndpointForDependentOrderService();
+    }
+
+    @Test
+    public void orderServiceRespondingWithRandomDataClose(){
+        stubFor(
+                get(urlEqualTo("/orders/customers/cust-2232"))
+                        .willReturn(aResponse()
+                                .withFault(Fault.RANDOM_DATA_THEN_CLOSE)
+                                .withHeader("Content-Type", "application/json")
+                        )
+        );
+
+        executeRestfulEndpointForDependentOrderService();
+    }
+
+    private void executeRestfulEndpointForDependentOrderService() {
         given()
                 .log().all()
                 .header("Content-type", "application/json")
                 .when()
-                .get("http://localhost:8084/customers/{id}/orders","cust-2232")
+                .get("http://localhost:8084/customers/{id}/orders", "cust-2232")
                 .then()
                 .log().all()
                 .statusCode(200);
-
     }
 
     @AfterEach
