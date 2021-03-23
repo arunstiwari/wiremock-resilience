@@ -1,92 +1,304 @@
-# wiremock-resilience
-2021-03-22 13:36:41 [main] INFO  w.o.e.j.s.handler.ContextHandler - Stopped w.o.e.j.s.ServletContextHandler@13e547a9{/,null,UNAVAILABLE}
-2021-03-22 13:36:41 [main] INFO  w.o.e.j.s.handler.ContextHandler - Stopped w.o.e.j.s.ServletContextHandler@23d1e5d0{/__admin,null,UNAVAILABLE}
+### 1. Resilience Test Scenarios
++ Scenario 1
+```java
+/**
+     *  Scenario 1:
+     *      Order service respond with Empty Response
+     *  Expectation:
+     *      If customer service has handled the empty response from Order service, we would get the final response with status 200
+     */
 
-com.github.tomakehurst.wiremock.common.JsonException: {
-  "errors" : [ {
-    "code" : 10,
-    "source" : { },
-    "title" : "Error parsing JSON",
-    "detail" : "Unexpected character ('<' (code 60)): expected a valid value (JSON String, Number, Array, Object or token 'null', 'true' or 'false')\n at [Source: (String)\"<html>\n<head>\n<meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\"/>\n<title>Error 403 No valid crumb was included in the request</title>\n</head>\n<body><h2>HTTP ERROR 403 No valid crumb was included in the request</h2>\n<table>\n<tr><th>URI:</th><td>/__admin/mappings</td></tr>\n<tr><th>STATUS:</th><td>403</td></tr>\n<tr><th>MESSAGE:</th><td>No valid crumb was included in the request</td></tr>\n<tr><th>SERVLET:</th><td>Stapler</td></tr>\n</table>\n<hr><a href=\"https://eclipse.org/jetty\">Powe\"[truncated 59 chars]; line: 1, column: 2]"
-  } ]
-}
+    @Test
+    public void orderServiceRespondingWithEmptyResponse(){
+        stubForFaultResponse(ORDERS_CUSTOMERS_CUST_2232,Fault.EMPTY_RESPONSE);
 
-	at com.github.tomakehurst.wiremock.common.JsonException.fromJackson(JsonException.java:53)
-	at com.github.tomakehurst.wiremock.common.Json.read(Json.java:55)
-	at com.github.tomakehurst.wiremock.client.HttpAdminClient.safelyExecuteRequest(HttpAdminClient.java:486)
-	at com.github.tomakehurst.wiremock.client.HttpAdminClient.executeRequest(HttpAdminClient.java:454)
-	at com.github.tomakehurst.wiremock.client.HttpAdminClient.addStubMapping(HttpAdminClient.java:131)
-	at com.github.tomakehurst.wiremock.client.WireMock.register(WireMock.java:298)
-	at com.github.tomakehurst.wiremock.client.WireMock.register(WireMock.java:293)
-	at com.github.tomakehurst.wiremock.client.WireMock.givenThat(WireMock.java:104)
-	at com.github.tomakehurst.wiremock.client.WireMock.stubFor(WireMock.java:108)
-	at com.tekmentor.resiliencectf.faults.FaultCTFTest.setup(FaultCTFTest.java:31)
-	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
-	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-	at java.lang.reflect.Method.invoke(Method.java:498)
-	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:688)
-	at org.junit.jupiter.engine.execution.MethodInvocation.proceed(MethodInvocation.java:60)
-	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$ValidatingInvocation.proceed(InvocationInterceptorChain.java:131)
-	at org.junit.jupiter.engine.extension.TimeoutExtension.intercept(TimeoutExtension.java:149)
-	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptLifecycleMethod(TimeoutExtension.java:126)
-	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptBeforeEachMethod(TimeoutExtension.java:76)
-	at org.junit.jupiter.engine.execution.ExecutableInvoker$ReflectiveInterceptorCall.lambda$ofVoidMethod$0(ExecutableInvoker.java:115)
-	at org.junit.jupiter.engine.execution.ExecutableInvoker.lambda$invoke$0(ExecutableInvoker.java:105)
-	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$InterceptedInvocation.proceed(InvocationInterceptorChain.java:106)
-	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.proceed(InvocationInterceptorChain.java:64)
-	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.chainAndInvoke(InvocationInterceptorChain.java:45)
-	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.invoke(InvocationInterceptorChain.java:37)
-	at org.junit.jupiter.engine.execution.ExecutableInvoker.invoke(ExecutableInvoker.java:104)
-	at org.junit.jupiter.engine.execution.ExecutableInvoker.invoke(ExecutableInvoker.java:98)
-	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.invokeMethodInExtensionContext(ClassBasedTestDescriptor.java:490)
-	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.lambda$synthesizeBeforeEachMethodAdapter$19(ClassBasedTestDescriptor.java:475)
-	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$invokeBeforeEachMethods$2(TestMethodTestDescriptor.java:167)
-	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$invokeBeforeMethodsOrCallbacksUntilExceptionOccurs$5(TestMethodTestDescriptor.java:195)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.invokeBeforeMethodsOrCallbacksUntilExceptionOccurs(TestMethodTestDescriptor.java:195)
-	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.invokeBeforeEachMethods(TestMethodTestDescriptor.java:164)
-	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:127)
-	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:65)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$5(NodeTestTask.java:139)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$7(NodeTestTask.java:129)
-	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:127)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:126)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:84)
-	at java.util.ArrayList.forEach(ArrayList.java:1259)
-	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:38)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$5(NodeTestTask.java:143)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$7(NodeTestTask.java:129)
-	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:127)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:126)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:84)
-	at java.util.ArrayList.forEach(ArrayList.java:1259)
-	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:38)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$5(NodeTestTask.java:143)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$7(NodeTestTask.java:129)
-	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:127)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:126)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:84)
-	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.submit(SameThreadHierarchicalTestExecutorService.java:32)
-	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:57)
-	at org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine.execute(HierarchicalTestEngine.java:51)
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:108)
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:88)
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.lambda$execute$0(EngineExecutionOrchestrator.java:54)
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.withInterceptedStreams(EngineExecutionOrchestrator.java:67)
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:52)
-	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:96)
-	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:75)
-	at com.intellij.junit5.JUnit5IdeaTestRunner.startRunnerWithArgs(JUnit5IdeaTestRunner.java:71)
-	at com.intellij.rt.junit.IdeaTestRunner$Repeater.startRunnerWithArgs(IdeaTestRunner.java:33)
-	at com.intellij.rt.junit.JUnitStarter.prepareStreamsAndStart(JUnitStarter.java:220)
-	at com.intellij.rt.junit.JUnitStarter.main(JUnitStarter.java:53)
+        stubForServiceResponseWithValidData(SHIPPING_STATUS_FOR_GIVEN_ORDER_ID, "shipping.json");
+
+        executeRestfulEndpointForDependentOrderService();
+    }
+```
++ Scenario 2
+```java
+/**
+     *  Scenario 2:
+     *      Order service respond with valid Order
+     *      ShippingService fails to provide valid reponse. It responds with an empty response
+     *  Expectation:
+     *      If customer service has handled the empty response from Shipping service, we would get the final response with status 200
+     */
+
+    @Test
+    public void shippingServiceRespondingWithEmptyResponse(){
+        String customersCust2232 = ORDERS_CUSTOMERS_CUST_2232;
+
+        stubForServiceResponseWithValidData(customersCust2232, "order.json");
+        stubForFaultResponse(SHIPPING_STATUS_FOR_GIVEN_ORDER_ID, Fault.EMPTY_RESPONSE);
+
+        executeRestfulEndpointForDependentOrderService();
+    }
+
+```
++ Scenario 3
+```java
+/**
+     *  Scenario 3:
+     *      Order service respond with ServiceNotAvailable error
+     *
+     *  Expectation:
+     *      If customer service has handled the ServiceUnavailability error response from Order service, we would get the final response with status 200
+     */
+
+    @Test
+    public void orderServiceNotAvailable(){
+        UrlPattern urlPattern = urlEqualTo(ORDERS_CUSTOMERS_CUST_2232);
+
+        ResponseDefinitionBuilder responseWithHeader = serviceUnavailable()
+                .withHeader("Content-Type", "application/json");
+
+        getStubForGivenStatusAndBodyWithHeader(urlPattern, responseWithHeader);
+
+        UrlPattern urlPattern1 = urlEqualTo(SHIPPING_STATUS_FOR_GIVEN_ORDER_ID);
+
+        String fileName = "shipping.json";
+        int status = 200;
+
+        ResponseDefinitionBuilder responseBuilderWithStatusAndBodyAndHeader = aResponse()
+                .withStatus(status)
+                .withBodyFile(fileName)
+                .withHeader("Content-Type", "application/json");
+        getStubForGivenStatusAndBodyWithHeader(urlPattern1, responseBuilderWithStatusAndBodyAndHeader);
+
+        executeRestfulEndpointForDependentOrderService();
+    }
+```
++ Scenario 4
+```java
+    /**
+     *  Scenario 4:
+     *      Order service respond with valid order data
+     *      Shipping service respond with service unavailability error
+     *
+     *  Expectation:
+     *      If customer service has handled the ServiceUnavailability error response from Shipping service, we would get the final response with status 200
+     */
+
+    @Test
+    public void shippingServiceNotAvailable(){
+        getStubForGivenStatusAndBodyWithHeader(urlEqualTo(ORDERS_CUSTOMERS_CUST_2232), aResponse()
+                .withStatus(200)
+                .withBodyFile("order.json")
+                .withHeader("Content-Type", "application/json"));
+        getStubForGivenStatusAndBodyWithHeader(urlPathEqualTo(SHIPPING_STATUS_FOR_GIVEN_ORDER_ID), serviceUnavailable()
+                .withHeader("Content-Type", "application/json"));
+
+        executeRestfulEndpointForDependentOrderService();
+    }
+
+```
++ Scenario 5
+```java
+    /**
+     *  Scenario 5:
+     *      Order service respond with Server Error
+     *
+     *  Expectation:
+     *      If customer service has handled the ServiceError error response from Order service, we would get the final response with status 200
+     */
+
+    @Test
+    public void callingOrderServiceThrowsServerError(){
+        getStubForGivenStatusAndBodyWithHeader(urlEqualTo(ORDERS_CUSTOMERS_CUST_2232), serverError()
+                .withHeader("Content-Type", "application/json"));
+        getStubForGivenStatusAndBodyWithHeader(urlPathEqualTo(SHIPPING_STATUS_FOR_GIVEN_ORDER_ID), aResponse()
+                .withStatus(200)
+                .withBodyFile("shipping.json")
+                .withHeader("Content-Type", "application/json"));
+
+        executeRestfulEndpointForDependentOrderService();
+    }
+
+```
+
++ Scenario 6
+```java
+/**
+     *  Scenario 6:
+     *      Order service respond with valid order
+     *      Shipping service respond with Server Error
+     *
+     *  Expectation:
+     *      If customer service has handled the ServiceError error response from Shipping service, we would get the final response with status 200
+     */
+
+    @Test
+    public void shippingServiceThrowsServerError(){
+        getStubForGivenStatusAndBodyWithHeader(urlEqualTo(ORDERS_CUSTOMERS_CUST_2232), aResponse()
+                .withStatus(200)
+                .withBodyFile("order.json")
+                .withHeader("Content-Type", "application/json"));
+        getStubForGivenStatusAndBodyWithHeader(urlPathEqualTo(SHIPPING_STATUS_FOR_GIVEN_ORDER_ID), serverError()
+                .withHeader("Content-Type", "application/json"));
+
+        executeRestfulEndpointForDependentOrderService();
+    }
+
+```
+
++ Scenario 7
+```java
+    /**
+     *  Scenario 7:
+     *      Order service respond with Malformed response
+     *
+     *  Expectation:
+     *      If customer service has handled the Malformed error response from Order service, we would get the final response with status 200
+     */
+
+    @Test
+    public void orderServiceRespondingWithMalformedResponse(){
+        getStubForGivenStatusAndBodyWithHeader(urlEqualTo(ORDERS_CUSTOMERS_CUST_2232), aResponse()
+                .withFault(Fault.MALFORMED_RESPONSE_CHUNK)
+                .withHeader("Content-Type", "application/json"));
+
+        getStubForGivenStatusAndBodyWithHeader(urlPathEqualTo(SHIPPING_STATUS_FOR_GIVEN_ORDER_ID), aResponse()
+                .withStatus(200)
+                .withBodyFile("shipping.json")
+                .withHeader("Content-Type", "application/json"));
+
+        executeRestfulEndpointForDependentOrderService();
+    }
+
+```
+
++ Scenario 8
+```java
+    /**
+     *  Scenario 8:
+     *      Order service respond with valid order
+     *      Shipping Service respond with malformed response
+     *
+     *  Expectation:
+     *      If customer service has handled the Malformed error response from Shipping service, we would get the final response with status 200
+     */
+
+    @Test
+    public void shippingServiceRespondingWithMalformedResponse(){
+        getStubForGivenStatusAndBodyWithHeader(urlEqualTo(ORDERS_CUSTOMERS_CUST_2232), aResponse()
+                .withStatus(200)
+                .withBodyFile("order.json")
+                .withHeader("Content-Type", "application/json"));
+
+        getStubForGivenStatusAndBodyWithHeader(urlPathEqualTo(SHIPPING_STATUS_FOR_GIVEN_ORDER_ID), aResponse()
+                .withFault(Fault.MALFORMED_RESPONSE_CHUNK)
+                .withHeader("Content-Type", "application/json"));
+
+        executeRestfulEndpointForDependentOrderService();
+    }
+
+```
+
++ Scenario 9
+```java
+    /**
+     *  Scenario 9:
+     *      Order service respond with Connection reset error
+     *
+     *  Expectation:
+     *      If customer service has handled the Connection reset error response from Order service, we would get the final response with status 200
+     */
+
+    @Test
+    public void orderServiceRespondingWithConnectionReset(){
+        getStubForGivenStatusAndBodyWithHeader(urlEqualTo(ORDERS_CUSTOMERS_CUST_2232), aResponse()
+                .withFault(Fault.CONNECTION_RESET_BY_PEER)
+                .withHeader("Content-Type", "application/json"));
+        getStubForGivenStatusAndBodyWithHeader(urlPathEqualTo(SHIPPING_STATUS_FOR_GIVEN_ORDER_ID), aResponse()
+                .withStatus(200)
+                .withBodyFile("shipping.json")
+                .withHeader("Content-Type", "application/json"));
+
+
+        executeRestfulEndpointForDependentOrderService();
+    }
+
+```
+
++ Scenario 10
+```java
+    /**
+     *  Scenario 10:
+     *      Order service respond with valid order
+     *      Shipping Service respond with error Connection reset
+     *
+     *  Expectation:
+     *      If customer service has handled the Connection reset error response from Shipping service, we would get the final response with status 200
+     */
+    @Test
+    public void shippingServiceRespondingWithConnectionReset(){
+        getStubForGivenStatusAndBodyWithHeader(urlEqualTo(ORDERS_CUSTOMERS_CUST_2232), aResponse()
+                .withStatus(200)
+                .withBodyFile("order.json")
+                .withHeader("Content-Type", "application/json"));
+        getStubForGivenStatusAndBodyWithHeader(urlPathEqualTo(SHIPPING_STATUS_FOR_GIVEN_ORDER_ID), aResponse()
+                .withFault(Fault.CONNECTION_RESET_BY_PEER)
+                .withHeader("Content-Type", "application/json"));
+
+
+        executeRestfulEndpointForDependentOrderService();
+    }
+
+```
+
++ Scenario 11
+```java
+    /**
+     *  Scenario 11:
+     *      Order service respond with error Random data close
+     *
+     *  Expectation:
+     *      If customer service has handled the Random data close error response from Order service, we would get the final response with status 200
+     */
+
+    @Test
+    public void orderServiceRespondingWithRandomDataClose(){
+        getStubForGivenStatusAndBodyWithHeader(urlEqualTo(ORDERS_CUSTOMERS_CUST_2232), aResponse()
+                .withFault(Fault.RANDOM_DATA_THEN_CLOSE)
+                .withHeader("Content-Type", "application/json"));
+
+        getStubForGivenStatusAndBodyWithHeader(urlPathEqualTo(SHIPPING_STATUS_FOR_GIVEN_ORDER_ID), aResponse()
+                .withStatus(200)
+                .withBodyFile("shipping.json")
+                .withHeader("Content-Type", "application/json"));
+
+
+        executeRestfulEndpointForDependentOrderService();
+    }
+
+```
+
++ Scenario 12
+```java
+    /**
+     *  Scenario 12:
+     *      Order service respond with valid order
+     *      Shipping service respond with error Random data close
+     *
+     *  Expectation:
+     *      If customer service has handled the Random data close error response from Shipping service, we would get the final response with status 200
+     */
+
+    @Test
+    public void shippingServiceRespondingWithRandomDataClose(){
+        getStubForGivenStatusAndBodyWithHeader(urlEqualTo(ORDERS_CUSTOMERS_CUST_2232), aResponse()
+                .withStatus(200)
+                .withBodyFile("order.json")
+                .withHeader("Content-Type", "application/json"));
+        getStubForGivenStatusAndBodyWithHeader(urlPathEqualTo(SHIPPING_STATUS_FOR_GIVEN_ORDER_ID), aResponse()
+                .withFault(Fault.RANDOM_DATA_THEN_CLOSE)
+                .withHeader("Content-Type", "application/json"));
+
+
+        executeRestfulEndpointForDependentOrderService();
+    }
+
+```
