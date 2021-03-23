@@ -5,12 +5,15 @@ import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import com.github.tomakehurst.wiremock.http.Fault;
-import com.github.tomakehurst.wiremock.http.trafficlistener.ConsoleNotifyingWiremockNetworkTrafficListener;
 import com.github.tomakehurst.wiremock.matching.UrlPattern;
 import com.tekmentor.resiliencectf.FaultResponseTransformer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static io.restassured.RestAssured.given;
@@ -20,7 +23,8 @@ public class FaultCTFTest {
     public static final String SHIPPING_STATUS_FOR_GIVEN_ORDER_ID = "/shippings/8c6999bd-74ae-440c-9763-be51be157786";
     public static final String ORDERS_CUSTOMERS_CUST_2232 = "/orders/customers/cust-2232";
     WireMockServer wireMockServer;
-
+    WireMockConfiguration wireMockConfiguration;
+    Map<String, Object> parameters = new HashMap<>();
 /**
  *  dependency-mapping.json
  *  "serverUrl": "http://localhost:8084",
@@ -43,9 +47,11 @@ public class FaultCTFTest {
     @BeforeEach
     public void setup(){
 
-        WireMockConfiguration wireMockConfiguration = wireMockConfig()
-                .networkTrafficListener(new ConsoleNotifyingWiremockNetworkTrafficListener())
-//                .extensions(FaultResponseTransformer.class)
+        parameters.put("isLatencyRequired", false);
+        parameters.put("latencyPeriod", 1000 );
+         wireMockConfiguration = wireMockConfig()
+//                .networkTrafficListener(new ConsoleNotifyingWiremockNetworkTrafficListener())
+                .extensions(FaultResponseTransformer.class)
                 .port(8092);
 
         wireMockServer = new WireMockServer(wireMockConfiguration);
@@ -65,9 +71,13 @@ public class FaultCTFTest {
 
     @Test
     public void orderServiceRespondingWithEmptyResponse(){
+
         stubForFaultResponse(ORDERS_CUSTOMERS_CUST_2232,Fault.EMPTY_RESPONSE);
 
-        stubForServiceResponseWithValidData(SHIPPING_STATUS_FOR_GIVEN_ORDER_ID, "shipping.json");
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("isLatencyRequired", false);
+        parameters.put("latencyPeriod", 1000 );
+        stubForServiceResponseWithValidData(SHIPPING_STATUS_FOR_GIVEN_ORDER_ID, "shipping.json", parameters);
 
         executeRestfulEndpointForDependentOrderService();
     }
@@ -85,7 +95,7 @@ public class FaultCTFTest {
     public void shippingServiceRespondingWithEmptyResponse(){
         String customersCust2232 = ORDERS_CUSTOMERS_CUST_2232;
 
-        stubForServiceResponseWithValidData(customersCust2232, "order.json");
+        stubForServiceResponseWithValidData(customersCust2232, "order.json", parameters);
         stubForFaultResponse(SHIPPING_STATUS_FOR_GIVEN_ORDER_ID, Fault.EMPTY_RESPONSE);
 
         executeRestfulEndpointForDependentOrderService();
@@ -349,10 +359,11 @@ public class FaultCTFTest {
         );
     }
 
-    private void stubForServiceResponseWithValidData(String serviceUrl, String fileName) {
+    private void stubForServiceResponseWithValidData(String serviceUrl, String fileName, Map<String, Object> parameters) {
         stubFor(
                 get(urlEqualTo(serviceUrl))
                         .willReturn(aResponse()
+                                .withTransformerParameters(parameters)
                                 .withBodyFile(fileName)
                                 .withHeader("Content-Type", "application/json")
                         )

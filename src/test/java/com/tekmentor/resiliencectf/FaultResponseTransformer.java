@@ -11,19 +11,16 @@ public class FaultResponseTransformer extends ResponseDefinitionTransformer {
 
     @Override
     public ResponseDefinition transform(Request request, ResponseDefinition responseDefinition, FileSource files, Parameters parameters) {
-        System.out.println("request in transform ----"+request);
-        System.out.println("---request end-----");
+        System.out.println( "request = "+request + ", parameters = " + parameters);
+//        System.out.println("---request end-----");
         try {
             Thread.sleep(100);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        return new ResponseDefinitionBuilder()
-                .withHeader("Content-Type", "application/json")
-                .withStatus(200)
-//                .withStatusMessage("java.net.SocketTimeoutException: Read timed out")
-                .withBodyFile("order.json")
-                .build();
+//        String fault = (responseDefinition.getFault() != null)? responseDefinition.getFault().name(): null;
+//        System.out.println("fault = " + fault);
+        return responseDefinition;
     }
 
     @Override
