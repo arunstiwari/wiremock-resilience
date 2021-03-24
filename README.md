@@ -1,4 +1,5 @@
 ### 1. Resilience Test Scenarios
++ -Dwiremock.port=8092 -Dwiremock.host=localhost -Dwiremock.thirdparty.dependencies=http://localhost:8092/orders/customers/cust-2232,http://localhost:8092/shippings/8c6999bd-74ae-440c-9763-be51be157786
 + `Scenario 1`
 ```java
 /**

@@ -68,6 +68,14 @@ public class FaultCTFTest {
      *  Expectation:
      *      If customer service has handled the empty response from Order service, we would get the final response with status 200
      */
+@Test
+public void testMatchedContext() {
+    String url = "http://localhost:8092/shipping/{orderId}";
+    String matchedContext = url.replaceAll("^(https?)://[-a-zA-Z0-9+&@#%?=~_|!:,.;]*/","/");
+//            .replaceAll("\\{[-a-zA-Z0-9+&@#%?=~_|!:,.;]*\\}","[-a-zA-Z0-9_]*");
+    System.out.println("matchedContext = " + matchedContext);
+
+}
 
     @Test
     public void orderServiceRespondingWithEmptyResponse(){

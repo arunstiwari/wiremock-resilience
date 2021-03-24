@@ -1,0 +1,20 @@
+{
+  "id" : "bba52576-7c5b-48bb-9016-8d4abc1ccc08",
+  "name" : "customers",
+  "request" : {
+    "url" : "/customers",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 200,
+    "body" : "[{\"id\":\"1616068623674\",\"name\":\"Customer1\",\"age\":\"34\"},{\"id\":\"1616068632336\",\"name\":\"Customer2\",\"age\":\"44\"}]",
+    "headers" : {
+      "Content-Type" : "application/json",
+      "Date" : "Thu, 18 Mar 2021 13:12:50 GMT",
+      "Keep-Alive" : "timeout=60"
+    }
+  },
+  "uuid" : "bba52576-7c5b-48bb-9016-8d4abc1ccc08",
+  "persistent" : true,
+  "insertionIndex" : 1
+}

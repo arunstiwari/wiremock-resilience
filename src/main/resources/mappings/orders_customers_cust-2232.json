@@ -1,0 +1,20 @@
+{
+  "id" : "8f129fa1-4a01-4b68-bb90-4348430fe0ef",
+  "name" : "orders_customers_cust-2232",
+  "request" : {
+    "url" : "/orders/customers/cust-2232",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 200,
+    "body" : "{\"id\":\"89504b75-9071-4948-aa89-a3194affa335\",\"orderDate\":\"2021-03-21T09:00:00.663+00:00\",\"customerId\":\"cust-2232\",\"totalAmount\":450.0}",
+    "headers" : {
+      "Content-Type" : "application/json",
+      "Date" : "Sun, 21 Mar 2021 09:01:44 GMT",
+      "Keep-Alive" : "timeout=60"
+    }
+  },
+  "uuid" : "8f129fa1-4a01-4b68-bb90-4348430fe0ef",
+  "persistent" : true,
+  "insertionIndex" : 4
+}

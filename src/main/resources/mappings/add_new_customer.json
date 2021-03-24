@@ -1,0 +1,25 @@
+{
+  "id" : "a6b78249-8f0e-4ba9-8d8f-fb00196831f9",
+  "name" : "customers",
+  "request" : {
+    "url" : "/customers",
+    "method" : "POST",
+    "bodyPatterns" : [ {
+      "equalToJson" : "{\"name\": \"Customer5\", \"age\": \"54\"}",
+      "ignoreArrayOrder" : true,
+      "ignoreExtraElements" : true
+    } ]
+  },
+  "response" : {
+    "status" : 201,
+    "body" : "1616073888420",
+    "headers" : {
+      "Content-Type" : "text/plain;charset=UTF-8",
+      "Date" : "Thu, 18 Mar 2021 13:24:48 GMT",
+      "Keep-Alive" : "timeout=60"
+    }
+  },
+  "uuid" : "a6b78249-8f0e-4ba9-8d8f-fb00196831f9",
+  "persistent" : true,
+  "insertionIndex" : 2
+}
