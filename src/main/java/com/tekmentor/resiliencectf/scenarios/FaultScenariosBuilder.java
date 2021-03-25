@@ -1,25 +1,34 @@
 package com.tekmentor.resiliencectf.scenarios;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class FaultScenariosBuilder {
-    private String[] spiltUrls;
-    private String targetUrl;
+    private String[] dependencyUrls;
+    private String apiUrl;
+    private String requestType;
+    private String requestBody;
 
-    public FaultScenariosBuilder setSpiltUrls(String[] spiltUrls) {
-        this.spiltUrls = spiltUrls;
+    public FaultScenariosBuilder setDependencyUrls(String[] dependencyUrls) {
+        this.dependencyUrls = dependencyUrls;
         return this;
     }
 
-    public FaultScenariosBuilder setTargetUrl(String targetUrl) {
-        this.targetUrl = targetUrl;
+    public FaultScenariosBuilder setApiUrl(String apiUrl) {
+        this.apiUrl = apiUrl;
+        return this;
+    }
+
+    public FaultScenariosBuilder setRequestType(String requestType) {
+        this.requestType = requestType;
+        return this;
+    }
+
+    public FaultScenariosBuilder setRequestBody(String requestBody) {
+        this.requestBody = requestBody;
         return this;
     }
 
 
     public FaultScenarios createFaultScenarios() {
-        FaultScenarios scenarios = new FaultScenarios(spiltUrls,targetUrl);
+        FaultScenarios scenarios = new FaultScenarios(dependencyUrls, apiUrl, requestType,requestBody);
         return scenarios;
     }
 

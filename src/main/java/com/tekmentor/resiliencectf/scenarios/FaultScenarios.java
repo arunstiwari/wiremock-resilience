@@ -4,6 +4,8 @@ import com.github.tomakehurst.wiremock.client.MappingBuilder;
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.matching.UrlPattern;
+import com.tekmentor.resiliencectf.request.RequestFactory;
+import com.tekmentor.resiliencectf.request.processor.IRequestProcessor;
 import com.tekmentor.resiliencectf.scenarios.faults.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,65 +17,68 @@ import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static io.restassured.RestAssured.given;
 
 public class FaultScenarios {
     public static final String REGEX_PATTERN = "^(https?)://[-a-zA-Z0-9+&@#%?=~_|!:,.;]*/";
     private static final Logger LOG = LoggerFactory.getLogger(FaultScenarios.class);
-    private String[] spiltUrls;
-    private String targetUrl;
+    private String[] dependencyUrls;
+    private String apiUrl;
+    private String requestBody;
+    private String requestType;
     private List<IFaultScenario> faultScenarios = new ArrayList<>();
 
     public FaultScenarios() {
     }
 
-    public FaultScenarios(String[] spiltUrls, String targetUrl) {
-        this.spiltUrls = spiltUrls;
-        this.targetUrl = targetUrl;
+    public FaultScenarios(String[] dependencyUrls, String apiUrl, String requestType, String requestBody) {
+        this.dependencyUrls = dependencyUrls;
+        this.apiUrl = apiUrl;
+        this.requestBody = requestBody;
+        this.requestType = requestType;
     }
 
-    public String[] getSpiltUrls() {
-        return spiltUrls;
+    public String[] getDependencyUrls() {
+        return dependencyUrls;
     }
 
-    public void setSpiltUrls(String[] spiltUrls) {
-        this.spiltUrls = spiltUrls;
+    public void setDependencyUrls(String[] dependencyUrls) {
+        this.dependencyUrls = dependencyUrls;
     }
 
-    public String getTargetUrl() {
-        return targetUrl;
+    public String getApiUrl() {
+        return apiUrl;
     }
 
-    public void setTargetUrl(String targetUrl) {
-        this.targetUrl = targetUrl;
+    public void setApiUrl(String apiUrl) {
+        this.apiUrl = apiUrl;
     }
 
     public FaultScenarios withEmptyScenario() {
-        this.faultScenarios.add(new EmptyResponseScenario(this.spiltUrls, this.targetUrl));
+        this.faultScenarios.add(new EmptyResponseScenario(this.dependencyUrls, this.apiUrl, this.requestType, this.requestBody));
         return this;
     }
 
     public FaultScenarios withServiceUnavailabilityScenario() {
-        this.faultScenarios.add(new ServiceUnavailableScenario(this.spiltUrls, this.targetUrl));
+        this.faultScenarios.add(new ServiceUnavailableScenario(this.dependencyUrls, this.apiUrl, this.requestType, this.requestBody));
         return this;
     }
 
 
     public FaultScenarios withServerErrorScenario() {
-        this.faultScenarios.add(new ServerErrorScenario(this.spiltUrls, this.targetUrl));
+        this.faultScenarios.add(new ServerErrorScenario(this.dependencyUrls, this.apiUrl, this.requestType, this.requestBody));
         return this;
     }
     public FaultScenarios withMalformedResponseScenario() {
-        this.faultScenarios.add(new MalformedResponseScenario(this.spiltUrls, this.targetUrl));
+        this.faultScenarios.add(new MalformedResponseScenario(this.dependencyUrls, this.apiUrl, this.requestType, this.requestBody));
         return this;
     }
     public FaultScenarios withConnectionResetScenario() {
-        this.faultScenarios.add(new ConnectionResetScenario(this.spiltUrls, this.targetUrl));
+        this.faultScenarios.add(new ConnectionResetScenario(this.dependencyUrls, this.apiUrl, this.requestType, this.requestBody));
         return this;
     }
 
     public FaultScenarios withRandomDataCloseScenario() {
-        this.faultScenarios.add(new RandomDataCloseScenario(this.spiltUrls, this.targetUrl));
+        this.faultScenarios.add(new RandomDataCloseScenario(this.dependencyUrls, this.apiUrl, this.requestType, this.requestBody));
         return this;
     }
 
@@ -86,17 +91,17 @@ public class FaultScenarios {
     }
 
     protected void constructScenarios(ResponseDefinitionBuilder responseWithHeader) {
-        for (int i = 0; i < getSpiltUrls().length; ++i) {
+        for (int i = 0; i < getDependencyUrls().length; ++i) {
             WireMock.reset();
-            String matchedContext = getServiceContext(getSpiltUrls()[i]);
+            String matchedContext = getServiceContext(getDependencyUrls()[i]);
 
             UrlPattern urlPattern = urlEqualTo(matchedContext);
             getStubForGivenStatusAndBodyWithHeader(urlPattern, responseWithHeader);
 
-            for (int j = 0; j < getSpiltUrls().length; j++) {
+            for (int j = 0; j < getDependencyUrls().length; j++) {
                 if (i != j) {
                     Map<String, Object> parameters = new HashMap<>();
-                    String tempUrl = getSpiltUrls()[j];
+                    String tempUrl = getDependencyUrls()[j];
                     String matchedContext1 = tempUrl.replaceAll(REGEX_PATTERN, "/");
 
                     UrlPattern urlPattern1 = urlEqualTo(matchedContext1);
@@ -108,7 +113,7 @@ public class FaultScenarios {
                 }
             }
 
-            executeRestfulEndpointForDependentOrderService();
+            invokeApiUrlEndpoint();
         }
     }
 
@@ -130,23 +135,9 @@ public class FaultScenarios {
         stubFor(builder);
     }
 
-    protected void executeRestfulEndpointForDependentOrderService() {
-        try {
-            int statusCode = given()
-                    .log().all()
-                    .header("Content-type", "application/json")
-                    .when()
-                    .get(this.targetUrl)
-                    .then().extract().response().statusCode();
-
-            System.out.println("statusCode = " + statusCode);
-//                   .then();
-//                   .log().all();
-//                   .statusCode(200);
-        }catch (Exception e){
-            LOG.error("Error Executing scenarios {}",e);
-        }
-
+    protected void invokeApiUrlEndpoint() {
+        IRequestProcessor processor = RequestFactory.getRequestProcessor(this.requestType);
+        processor.process(this.apiUrl,this.requestBody);
     }
 
     protected String getServiceContext(String spiltUrl) {

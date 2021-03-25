@@ -10,8 +10,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
 public class ServerErrorScenario extends FaultScenarios implements IFaultScenario {
     private static final Logger LOG = LoggerFactory.getLogger(ServerErrorScenario.class);
-    public ServerErrorScenario(String[] spiltUrls, String targetUrl) {
-        super(spiltUrls, targetUrl);
+    public ServerErrorScenario(String[] dependencyUrls, String apiUrl, String requestType, String requestBody) {
+        super(dependencyUrls, apiUrl, requestType, requestBody);
     }
 
     @Override

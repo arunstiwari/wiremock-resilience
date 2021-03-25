@@ -12,8 +12,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 public class MalformedResponseScenario extends FaultScenarios implements IFaultScenario {
     private final static Logger LOG = LoggerFactory.getLogger(MalformedResponseScenario.class);
 
-    public MalformedResponseScenario(String[] spiltUrls, String targetUrl) {
-        super(spiltUrls, targetUrl);
+    public MalformedResponseScenario(String[] dependencyUrls, String apiUrl, String requestType, String requestBody) {
+        super( dependencyUrls,  apiUrl,  requestType,  requestBody);
     }
 
     @Override

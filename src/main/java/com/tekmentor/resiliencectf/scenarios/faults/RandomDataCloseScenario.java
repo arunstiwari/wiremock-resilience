@@ -12,8 +12,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 public class RandomDataCloseScenario extends FaultScenarios implements IFaultScenario {
     private final static Logger LOG = LoggerFactory.getLogger(RandomDataCloseScenario.class);
 
-    public RandomDataCloseScenario(String[] spiltUrls, String targetUrl) {
-        super(spiltUrls, targetUrl);
+    public RandomDataCloseScenario(String[] dependencyUrls, String apiUrl, String requestType, String requestBody) {
+        super(dependencyUrls, apiUrl, requestType, requestBody);
     }
 
     @Override

@@ -13,8 +13,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.*;
 public class EmptyResponseScenario extends FaultScenarios implements IFaultScenario {
     private final static Logger LOG = LoggerFactory.getLogger(EmptyResponseScenario.class);
 
-    public EmptyResponseScenario(String[] spiltUrls, String targetUrl) {
-        super(spiltUrls, targetUrl);
+    public EmptyResponseScenario(String[] dependencyUrls, String apiUrl, String requestType, String requestBody) {
+        super(dependencyUrls, apiUrl, requestType, requestBody);
     }
 
     @Override

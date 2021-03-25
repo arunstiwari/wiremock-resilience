@@ -48,13 +48,15 @@ public class ResilienceCtfApplication implements CommandLineRunner {
         WireMock.configureFor(host, port);
         ctfWireMock.startWiremockServer();
 
-        String dependentUrls = env.getProperty("wiremock.thirdparty.dependencies");
-        String[] spiltUrls = parseDependentUrls(dependentUrls);
+        String dependentUrls = env.getProperty("api.thirdparty.dependencies");
+        String[] dependencyUrls = parseDependentUrls(dependentUrls);
 
-        //set the spiltUrls to the Scenarios instance
+        //set the dependencyUrls to the Scenarios instance
         FaultScenarios scenarios = new FaultScenariosBuilder()
-                .setSpiltUrls(spiltUrls)
-                .setTargetUrl(env.getProperty("targetUrl"))
+                .setDependencyUrls(dependencyUrls)
+                .setApiUrl(env.getProperty("api.url"))
+                .setRequestType(env.getProperty("api.request.type", "GET"))
+                .setRequestBody(env.getProperty("api.request.body", ""))
                 .createFaultScenarios()
                 .withEmptyScenario()
                 .withServiceUnavailabilityScenario()

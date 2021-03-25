@@ -12,8 +12,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 public class ConnectionResetScenario extends FaultScenarios implements IFaultScenario {
     private final static Logger LOG = LoggerFactory.getLogger(ConnectionResetScenario.class);
 
-    public ConnectionResetScenario(String[] spiltUrls, String targetUrl) {
-        super(spiltUrls, targetUrl);
+    public ConnectionResetScenario(String[] dependencyUrls, String apiUrl, String requestType, String requestBody) {
+        super(dependencyUrls,  apiUrl,  requestType,  requestBody);
     }
 
     @Override

@@ -12,8 +12,9 @@ import static com.github.tomakehurst.wiremock.client.WireMock.*;
 public class ServiceUnavailableScenario extends FaultScenarios implements IFaultScenario {
     private final static Logger LOG = LoggerFactory.getLogger(ServiceUnavailableScenario.class);
 
-    public ServiceUnavailableScenario(String[] spiltUrls, String targetUrl) {
-        super(spiltUrls, targetUrl);
+    public ServiceUnavailableScenario(String[] dependencyUrls, String apiUrl, String requestType, String requestBody) {
+
+        super(dependencyUrls, apiUrl, requestType, requestBody);
     }
 
     @Override
