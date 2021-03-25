@@ -1,6 +1,7 @@
 package com.tekmentor.resiliencectf.report.model;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 public class ExecutionResult {
     private int status;
@@ -21,7 +22,7 @@ public class ExecutionResult {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this)
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
                 .append("status", status)
                 .append("message", message)
                 .append("exception", exception)
