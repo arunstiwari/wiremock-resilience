@@ -3,6 +3,9 @@ package com.tekmentor.resiliencectf;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import com.tekmentor.resiliencectf.extensions.CTFResponseTransformer;
+import com.tekmentor.resiliencectf.report.IReportPublisher;
+import com.tekmentor.resiliencectf.report.ReportPublisher;
+import com.tekmentor.resiliencectf.report.model.ResilienceReport;
 import com.tekmentor.resiliencectf.scenarios.FaultScenarios;
 import com.tekmentor.resiliencectf.scenarios.FaultScenariosBuilder;
 import com.tekmentor.resiliencectf.scenarios.IFaultScenario;
@@ -16,6 +19,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.core.env.Environment;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
@@ -25,6 +29,9 @@ public class ResilienceCtfApplication implements CommandLineRunner {
 
     @Autowired
     private Environment env;
+
+    @Autowired
+    IReportPublisher reportPublisher;
 
     private static Logger LOG =LoggerFactory.getLogger(ResilienceCtfApplication.class);
 
@@ -51,24 +58,30 @@ public class ResilienceCtfApplication implements CommandLineRunner {
         String dependentUrls = env.getProperty("api.thirdparty.dependencies");
         String[] dependencyUrls = parseDependentUrls(dependentUrls);
 
+        IReportPublisher reportPublisher = new ReportPublisher();
         //set the dependencyUrls to the Scenarios instance
         FaultScenarios scenarios = new FaultScenariosBuilder()
                 .setDependencyUrls(dependencyUrls)
                 .setApiUrl(env.getProperty("api.url"))
                 .setRequestType(env.getProperty("api.request.type", "GET"))
                 .setRequestBody(env.getProperty("api.request.body", ""))
+                .attachReportPublisher(reportPublisher)
                 .createFaultScenarios()
-                .withEmptyScenario()
-                .withServiceUnavailabilityScenario()
-                .withServerErrorScenario()
-                .withMalformedResponseScenario()
-                .withConnectionResetScenario()
-                .withRandomDataCloseScenario();
+                .withAllScenarios();
+//                .withEmptyScenario()
+//                .withServiceUnavailabilityScenario()
+//                .withServerErrorScenario()
+//                .withMalformedResponseScenario()
+//                .withConnectionResetScenario()
+//                .withRandomDataCloseScenario();
 
         for (IFaultScenario scenario : scenarios.getFaultScenarios()){
             scenario.executeScenario();
         }
-
+        List<ResilienceReport> resilienceReports = scenarios.getReportPublisher().generateReport();
+        for (ResilienceReport report : resilienceReports){
+            System.out.println("report = " + report);
+        }
         ctfWireMock.stopWiremockServer();
     }
 

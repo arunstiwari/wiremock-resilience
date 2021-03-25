@@ -1,8 +1,11 @@
 package com.tekmentor.resiliencectf.request.processor;
 
-public class PutRequestProcessor implements IRequestProcessor {
-    @Override
-    public void process(String apiUrl, String requestBody) {
+import com.tekmentor.resiliencectf.report.model.ExecutionResult;
 
+public class PutRequestProcessor implements IRequestProcessor {
+
+    @Override
+    public ExecutionResult process(String apiUrl, String requestBody) {
+            return null;
     }
 }

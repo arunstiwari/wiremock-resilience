@@ -1,5 +1,7 @@
 package com.tekmentor.resiliencectf.request.processor;
 
+import com.tekmentor.resiliencectf.report.model.ExecutionResult;
+
 public interface IRequestProcessor {
-    void process(String apiUrl, String requestBody);
+    ExecutionResult process(String apiUrl, String requestBody);
 }

@@ -4,6 +4,10 @@ import com.github.tomakehurst.wiremock.client.MappingBuilder;
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.matching.UrlPattern;
+import com.tekmentor.resiliencectf.report.IReportPublisher;
+import com.tekmentor.resiliencectf.report.model.ContextReport;
+import com.tekmentor.resiliencectf.report.model.ExecutionResult;
+import com.tekmentor.resiliencectf.report.model.ResilienceReport;
 import com.tekmentor.resiliencectf.request.RequestFactory;
 import com.tekmentor.resiliencectf.request.processor.IRequestProcessor;
 import com.tekmentor.resiliencectf.scenarios.faults.*;
@@ -26,15 +30,17 @@ public class FaultScenarios {
     private String requestBody;
     private String requestType;
     private List<IFaultScenario> faultScenarios = new ArrayList<>();
+    private IReportPublisher reportPublisher;
 
     public FaultScenarios() {
     }
 
-    public FaultScenarios(String[] dependencyUrls, String apiUrl, String requestType, String requestBody) {
+    public FaultScenarios(String[] dependencyUrls, String apiUrl, String requestType, String requestBody, IReportPublisher reportPublisher) {
         this.dependencyUrls = dependencyUrls;
         this.apiUrl = apiUrl;
         this.requestBody = requestBody;
         this.requestType = requestType;
+        this.reportPublisher = reportPublisher;
     }
 
     public String[] getDependencyUrls() {
@@ -53,32 +59,66 @@ public class FaultScenarios {
         this.apiUrl = apiUrl;
     }
 
+    public String getRequestBody() {
+        return requestBody;
+    }
+
+    public void setRequestBody(String requestBody) {
+        this.requestBody = requestBody;
+    }
+
+    public String getRequestType() {
+        return requestType;
+    }
+
+    public void setRequestType(String requestType) {
+        this.requestType = requestType;
+    }
+
+    public IReportPublisher getReportPublisher() {
+        return reportPublisher;
+    }
+
+    public void setReportPublisher(IReportPublisher reportPublisher) {
+        this.reportPublisher = reportPublisher;
+    }
+
+    public FaultScenarios withAllScenarios(){
+        this.faultScenarios.add(new EmptyResponseScenario(this.dependencyUrls, this.apiUrl, this.requestType, this.requestBody, this.reportPublisher));
+        this.faultScenarios.add(new ServiceUnavailableScenario(this.dependencyUrls, this.apiUrl, this.requestType, this.requestBody,this.reportPublisher ));
+        this.faultScenarios.add(new ServerErrorScenario(this.dependencyUrls, this.apiUrl, this.requestType, this.requestBody, this.reportPublisher));
+        this.faultScenarios.add(new MalformedResponseScenario(this.dependencyUrls, this.apiUrl, this.requestType, this.requestBody, this.reportPublisher));
+        this.faultScenarios.add(new ConnectionResetScenario(this.dependencyUrls, this.apiUrl, this.requestType, this.requestBody,this.reportPublisher ));
+        this.faultScenarios.add(new RandomDataCloseScenario(this.dependencyUrls, this.apiUrl, this.requestType, this.requestBody,this.reportPublisher ));
+        return this;
+    }
+
     public FaultScenarios withEmptyScenario() {
-        this.faultScenarios.add(new EmptyResponseScenario(this.dependencyUrls, this.apiUrl, this.requestType, this.requestBody));
+        this.faultScenarios.add(new EmptyResponseScenario(this.dependencyUrls, this.apiUrl, this.requestType, this.requestBody, this.reportPublisher));
         return this;
     }
 
     public FaultScenarios withServiceUnavailabilityScenario() {
-        this.faultScenarios.add(new ServiceUnavailableScenario(this.dependencyUrls, this.apiUrl, this.requestType, this.requestBody));
+        this.faultScenarios.add(new ServiceUnavailableScenario(this.dependencyUrls, this.apiUrl, this.requestType, this.requestBody,this.reportPublisher ));
         return this;
     }
 
 
     public FaultScenarios withServerErrorScenario() {
-        this.faultScenarios.add(new ServerErrorScenario(this.dependencyUrls, this.apiUrl, this.requestType, this.requestBody));
+        this.faultScenarios.add(new ServerErrorScenario(this.dependencyUrls, this.apiUrl, this.requestType, this.requestBody,this.reportPublisher));
         return this;
     }
     public FaultScenarios withMalformedResponseScenario() {
-        this.faultScenarios.add(new MalformedResponseScenario(this.dependencyUrls, this.apiUrl, this.requestType, this.requestBody));
+        this.faultScenarios.add(new MalformedResponseScenario(this.dependencyUrls, this.apiUrl, this.requestType, this.requestBody, this.reportPublisher));
         return this;
     }
     public FaultScenarios withConnectionResetScenario() {
-        this.faultScenarios.add(new ConnectionResetScenario(this.dependencyUrls, this.apiUrl, this.requestType, this.requestBody));
+        this.faultScenarios.add(new ConnectionResetScenario(this.dependencyUrls, this.apiUrl, this.requestType, this.requestBody, this.reportPublisher));
         return this;
     }
 
     public FaultScenarios withRandomDataCloseScenario() {
-        this.faultScenarios.add(new RandomDataCloseScenario(this.dependencyUrls, this.apiUrl, this.requestType, this.requestBody));
+        this.faultScenarios.add(new RandomDataCloseScenario(this.dependencyUrls, this.apiUrl, this.requestType, this.requestBody, this.reportPublisher));
         return this;
     }
 
@@ -90,10 +130,12 @@ public class FaultScenarios {
         this.faultScenarios = faultScenarios;
     }
 
-    protected void constructScenarios(ResponseDefinitionBuilder responseWithHeader) {
+    protected void constructScenarios(ResponseDefinitionBuilder responseWithHeader, ResilienceReport report) {
         for (int i = 0; i < getDependencyUrls().length; ++i) {
             WireMock.reset();
             String matchedContext = getServiceContext(getDependencyUrls()[i]);
+            ContextReport ctxReport = new ContextReport();
+            ctxReport.setErrorContext(matchedContext);
 
             UrlPattern urlPattern = urlEqualTo(matchedContext);
             getStubForGivenStatusAndBodyWithHeader(urlPattern, responseWithHeader);
@@ -103,17 +145,17 @@ public class FaultScenarios {
                     Map<String, Object> parameters = new HashMap<>();
                     String tempUrl = getDependencyUrls()[j];
                     String matchedContext1 = tempUrl.replaceAll(REGEX_PATTERN, "/");
-
+                     ctxReport.addDependentContext(matchedContext1);
                     UrlPattern urlPattern1 = urlEqualTo(matchedContext1);
-                    ResponseDefinitionBuilder responseBuilderWithStatusAndBodyAndHeader = aResponse()
+                    ResponseDefinitionBuilder happyResponse = aResponse()
                             .withStatus(200)
                             .withBodyFile(fileName(matchedContext1));
-                    getStubForGivenStatusAndBodyWithHeader(urlPattern1, responseBuilderWithStatusAndBodyAndHeader);
+                    getStubForGivenStatusAndBodyWithHeader(urlPattern1, happyResponse);
 
                 }
             }
-
-            invokeApiUrlEndpoint();
+            report.addContext(ctxReport);
+            invokeApiUrlEndpoint(report);
         }
     }
 
@@ -135,9 +177,11 @@ public class FaultScenarios {
         stubFor(builder);
     }
 
-    protected void invokeApiUrlEndpoint() {
+    protected void invokeApiUrlEndpoint(ResilienceReport report) {
         IRequestProcessor processor = RequestFactory.getRequestProcessor(this.requestType);
-        processor.process(this.apiUrl,this.requestBody);
+        ExecutionResult executionResult = processor.process(this.apiUrl, this.requestBody);
+        report.setExecutionResult(executionResult);
+        this.reportPublisher.registerReport(report);
     }
 
     protected String getServiceContext(String spiltUrl) {

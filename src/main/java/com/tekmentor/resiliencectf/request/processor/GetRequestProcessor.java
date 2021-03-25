@@ -1,5 +1,6 @@
 package com.tekmentor.resiliencectf.request.processor;
 
+import com.tekmentor.resiliencectf.report.model.ExecutionResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,8 +10,9 @@ public class GetRequestProcessor implements IRequestProcessor {
     Logger LOG = LoggerFactory.getLogger(GetRequestProcessor.class);
 
     @Override
-    public void process(String apiUrl, String requestBody) {
+    public ExecutionResult process(String apiUrl, String requestBody) {
         LOG.info("apiUrl = {} , body= {}", apiUrl, requestBody);
+        ExecutionResult result = new ExecutionResult();
         try {
             int statusCode = given()
                     .log().all()
@@ -20,9 +22,15 @@ public class GetRequestProcessor implements IRequestProcessor {
                     .then().extract().response().statusCode();
 
             LOG.info("statusCode = {} " , statusCode);
-
+            result.status(statusCode);
+            result.message("Successfull");
         }catch (Exception e){
             LOG.error("Error Executing scenarios {}",e);
+            result.status(-1);
+            result.message("Failure");
+            result.exception(e);
         }
+
+        return result;
     }
 }

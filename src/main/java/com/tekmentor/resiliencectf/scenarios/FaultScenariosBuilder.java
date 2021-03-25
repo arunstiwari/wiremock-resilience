@@ -1,10 +1,13 @@
 package com.tekmentor.resiliencectf.scenarios;
 
+import com.tekmentor.resiliencectf.report.IReportPublisher;
+
 public class FaultScenariosBuilder {
     private String[] dependencyUrls;
     private String apiUrl;
     private String requestType;
     private String requestBody;
+    private IReportPublisher reportPublisher;
 
     public FaultScenariosBuilder setDependencyUrls(String[] dependencyUrls) {
         this.dependencyUrls = dependencyUrls;
@@ -28,8 +31,12 @@ public class FaultScenariosBuilder {
 
 
     public FaultScenarios createFaultScenarios() {
-        FaultScenarios scenarios = new FaultScenarios(dependencyUrls, apiUrl, requestType,requestBody);
+        FaultScenarios scenarios = new FaultScenarios(dependencyUrls, apiUrl, requestType,requestBody, reportPublisher);
         return scenarios;
     }
 
+    public FaultScenariosBuilder attachReportPublisher(IReportPublisher reportPublisher) {
+        this.reportPublisher = reportPublisher;
+        return this;
+    }
 }

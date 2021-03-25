@@ -1,8 +1,10 @@
 package com.tekmentor.resiliencectf.request.processor;
 
+import com.tekmentor.resiliencectf.report.model.ExecutionResult;
+
 public class DeleteRequestProcessor implements IRequestProcessor {
     @Override
-    public void process(String apiUrl, String requestBody) {
-
+    public ExecutionResult process(String apiUrl, String requestBody) {
+        return null;
     }
 }
