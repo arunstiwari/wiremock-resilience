@@ -16,8 +16,6 @@ public class CTFResponseTransformer extends ResponseDefinitionTransformer {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-//        String fault = (responseDefinition.getFault() != null)? responseDefinition.getFault().name(): null;
-//        System.out.println("fault = " + fault);
         return responseDefinition;
     }
 

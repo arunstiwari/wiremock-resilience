@@ -3,7 +3,6 @@ package com.tekmentor.resiliencectf;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import com.tekmentor.resiliencectf.extensions.CTFResponseTransformer;
-import com.tekmentor.resiliencectf.scenarios.EmptyResponseScenario;
 import com.tekmentor.resiliencectf.scenarios.FaultScenarios;
 import com.tekmentor.resiliencectf.scenarios.FaultScenariosBuilder;
 import com.tekmentor.resiliencectf.scenarios.IFaultScenario;
@@ -48,22 +47,25 @@ public class ResilienceCtfApplication implements CommandLineRunner {
         CTFWireMock ctfWireMock = new CTFWireMock(wireMockConfiguration);
         WireMock.configureFor(host, port);
         ctfWireMock.startWiremockServer();
-        //Execute the scenarios
+
         String dependentUrls = env.getProperty("wiremock.thirdparty.dependencies");
-        //parse the dependent url
         String[] spiltUrls = parseDependentUrls(dependentUrls);
 
         //set the spiltUrls to the Scenarios instance
-        FaultScenarios scenarios = new FaultScenariosBuilder().setSpiltUrls(spiltUrls)
+        FaultScenarios scenarios = new FaultScenariosBuilder()
+                .setSpiltUrls(spiltUrls)
+                .setTargetUrl(env.getProperty("targetUrl"))
                 .createFaultScenarios()
                 .withEmptyScenario()
                 .withServiceUnavailabilityScenario()
-                .withServerErrorScenario();
+                .withServerErrorScenario()
+                .withMalformedResponseScenario()
+                .withConnectionResetScenario()
+                .withRandomDataCloseScenario();
 
         for (IFaultScenario scenario : scenarios.getFaultScenarios()){
             scenario.executeScenario();
         }
-
 
         ctfWireMock.stopWiremockServer();
     }

@@ -20,7 +20,7 @@ import static io.restassured.RestAssured.given;
 
 public class LatencyTest {
 
-    public static final String SHIPPING_STATUS_FOR_GIVEN_ORDER_ID = "/shippings/8c6999bd-74ae-440c-9763-be51be157786";
+    public static final String SHIPPING_STATUS_FOR_GIVEN_ORDER_ID = "/shippings/78c6999bd-74ae-440c-9763-be51be157786";
     public static final String ORDERS_CUSTOMERS_CUST_2232 = "/orders/customers/cust-2232";
     WireMockServer wireMockServer;
     WireMockConfiguration wireMockConfiguration;

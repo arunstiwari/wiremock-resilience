@@ -1,25 +1,26 @@
-package com.tekmentor.resiliencectf.scenarios;
+package com.tekmentor.resiliencectf.scenarios.faults;
 
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.github.tomakehurst.wiremock.http.Fault;
+import com.tekmentor.resiliencectf.scenarios.FaultScenarios;
+import com.tekmentor.resiliencectf.scenarios.IFaultScenario;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
 
-public class EmptyResponseScenario extends FaultScenarios implements IFaultScenario{
+public class EmptyResponseScenario extends FaultScenarios implements IFaultScenario {
     private final static Logger LOG = LoggerFactory.getLogger(EmptyResponseScenario.class);
 
-    public EmptyResponseScenario(String[] spiltUrls) {
-        super(spiltUrls);
+    public EmptyResponseScenario(String[] spiltUrls, String targetUrl) {
+        super(spiltUrls, targetUrl);
     }
 
     @Override
     public void executeScenario() {
         LOG.info("Execution of EmptyData response scenario started");
-        ResponseDefinitionBuilder responseWithHeader = aResponse().withFault(Fault.EMPTY_RESPONSE)
-                .withHeader("Content-Type", "application/json");
+        ResponseDefinitionBuilder responseWithHeader = aResponse().withFault(Fault.EMPTY_RESPONSE);
         constructScenarios(responseWithHeader);
         LOG.info("Execution of EmptyData response scenario finished");
     }

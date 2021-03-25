@@ -4,6 +4,7 @@ import com.github.tomakehurst.wiremock.client.MappingBuilder;
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.matching.UrlPattern;
+import com.tekmentor.resiliencectf.scenarios.faults.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,13 +21,15 @@ public class FaultScenarios {
     public static final String REGEX_PATTERN = "^(https?)://[-a-zA-Z0-9+&@#%?=~_|!:,.;]*/";
     private static final Logger LOG = LoggerFactory.getLogger(FaultScenarios.class);
     private String[] spiltUrls;
+    private String targetUrl;
     private List<IFaultScenario> faultScenarios = new ArrayList<>();
 
     public FaultScenarios() {
     }
 
-    public FaultScenarios(String[] spiltUrls) {
+    public FaultScenarios(String[] spiltUrls, String targetUrl) {
         this.spiltUrls = spiltUrls;
+        this.targetUrl = targetUrl;
     }
 
     public String[] getSpiltUrls() {
@@ -37,19 +40,40 @@ public class FaultScenarios {
         this.spiltUrls = spiltUrls;
     }
 
+    public String getTargetUrl() {
+        return targetUrl;
+    }
+
+    public void setTargetUrl(String targetUrl) {
+        this.targetUrl = targetUrl;
+    }
+
     public FaultScenarios withEmptyScenario() {
-        this.faultScenarios.add(new EmptyResponseScenario(this.spiltUrls));
+        this.faultScenarios.add(new EmptyResponseScenario(this.spiltUrls, this.targetUrl));
         return this;
     }
 
     public FaultScenarios withServiceUnavailabilityScenario() {
-        this.faultScenarios.add(new ServiceUnavailableScenario(this.spiltUrls));
+        this.faultScenarios.add(new ServiceUnavailableScenario(this.spiltUrls, this.targetUrl));
         return this;
     }
 
 
     public FaultScenarios withServerErrorScenario() {
-        this.faultScenarios.add(new ServerErrorScenario(this.spiltUrls));
+        this.faultScenarios.add(new ServerErrorScenario(this.spiltUrls, this.targetUrl));
+        return this;
+    }
+    public FaultScenarios withMalformedResponseScenario() {
+        this.faultScenarios.add(new MalformedResponseScenario(this.spiltUrls, this.targetUrl));
+        return this;
+    }
+    public FaultScenarios withConnectionResetScenario() {
+        this.faultScenarios.add(new ConnectionResetScenario(this.spiltUrls, this.targetUrl));
+        return this;
+    }
+
+    public FaultScenarios withRandomDataCloseScenario() {
+        this.faultScenarios.add(new RandomDataCloseScenario(this.spiltUrls, this.targetUrl));
         return this;
     }
 
@@ -78,7 +102,7 @@ public class FaultScenarios {
                     UrlPattern urlPattern1 = urlEqualTo(matchedContext1);
                     ResponseDefinitionBuilder responseBuilderWithStatusAndBodyAndHeader = aResponse()
                             .withStatus(200)
-                            .withHeader("Content-Type", "application/json");
+                            .withBodyFile(fileName(matchedContext1));
                     getStubForGivenStatusAndBodyWithHeader(urlPattern1, responseBuilderWithStatusAndBodyAndHeader);
 
                 }
@@ -88,9 +112,20 @@ public class FaultScenarios {
         }
     }
 
+    protected String fileName(String matchedContext){
+        if (matchedContext.equals("/orders/customers/cust-2232")){
+            return "order.json";
+        }else {
+            return "shipping.json";
+        }
+    }
+
     protected void getStubForGivenStatusAndBodyWithHeader(UrlPattern urlPattern, ResponseDefinitionBuilder responseBuilderWithStatusAndBodyAndHeader) {
         MappingBuilder builder = get(urlPattern)
-                                    .willReturn(responseBuilderWithStatusAndBodyAndHeader);
+                                    .willReturn(
+                                            responseBuilderWithStatusAndBodyAndHeader
+                                                    .withHeader("Content-Type", "application/json")
+                                    );
 
         stubFor(builder);
     }
@@ -101,7 +136,7 @@ public class FaultScenarios {
                     .log().all()
                     .header("Content-type", "application/json")
                     .when()
-                    .get("http://localhost:8084/customers/{id}/orders", "cust-2232")
+                    .get(this.targetUrl)
                     .then().extract().response().statusCode();
 
             System.out.println("statusCode = " + statusCode);
@@ -115,8 +150,7 @@ public class FaultScenarios {
     }
 
     protected String getServiceContext(String spiltUrl) {
-        String url = spiltUrl;
-        return url.replaceAll(REGEX_PATTERN,"/");
+        return spiltUrl.replaceAll(REGEX_PATTERN,"/");
     }
 
 }
