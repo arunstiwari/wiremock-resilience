@@ -6,6 +6,7 @@ import com.tekmentor.resiliencectf.report.IReportPublisher;
 import com.tekmentor.resiliencectf.report.model.ResilienceReport;
 import com.tekmentor.resiliencectf.scenarios.FaultScenarios;
 import com.tekmentor.resiliencectf.scenarios.IResilienceScenario;
+import com.tekmentor.resiliencectf.scenarios.model.RequestParameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,10 +16,15 @@ public class ConnectionResetScenario extends FaultScenarios implements IResilien
     private final static Logger LOG = LoggerFactory.getLogger(ConnectionResetScenario.class);
     private final ResilienceReport connectionResetReport;
 
-    public ConnectionResetScenario(String[] dependencyUrls, String apiUrl, String requestType, String requestBody, IReportPublisher reportPublisher) {
-        super(dependencyUrls,  apiUrl,  requestType,  requestBody,reportPublisher );
+    public ConnectionResetScenario(RequestParameter requestParameter, IReportPublisher reportPublisher) {
+        super(requestParameter,reportPublisher );
         this.connectionResetReport = new ResilienceReport();
     }
+
+//    public ConnectionResetScenario(String[] dependencyUrls, String apiUrl, String requestType, String requestBody, IReportPublisher reportPublisher) {
+//        super(dependencyUrls,  apiUrl,  requestType,  requestBody,reportPublisher );
+//        this.connectionResetReport = new ResilienceReport();
+//    }
 
     @Override
     public void executeScenario() {

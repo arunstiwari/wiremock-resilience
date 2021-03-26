@@ -5,6 +5,7 @@ import com.tekmentor.resiliencectf.report.IReportPublisher;
 import com.tekmentor.resiliencectf.report.model.ResilienceReport;
 import com.tekmentor.resiliencectf.scenarios.FaultScenarios;
 import com.tekmentor.resiliencectf.scenarios.IResilienceScenario;
+import com.tekmentor.resiliencectf.scenarios.model.RequestParameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,8 +16,8 @@ public class ServiceUnavailableScenario extends FaultScenarios implements IResil
     private final static Logger LOG = LoggerFactory.getLogger(ServiceUnavailableScenario.class);
     private final ResilienceReport resilienceReport;
 
-    public ServiceUnavailableScenario(String[] dependencyUrls, String apiUrl, String requestType, String requestBody, IReportPublisher reportPublisher) {
-        super(dependencyUrls, apiUrl, requestType, requestBody, reportPublisher);
+    public ServiceUnavailableScenario(RequestParameter requestParameter, IReportPublisher reportPublisher) {
+        super(requestParameter, reportPublisher);
         this.resilienceReport = new ResilienceReport();
     }
 

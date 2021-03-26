@@ -7,7 +7,10 @@ import com.tekmentor.resiliencectf.report.IReportPublisher;
 import com.tekmentor.resiliencectf.report.JsonReportPublisher;
 import com.tekmentor.resiliencectf.scenarios.ResilienceScenarioBuilder;
 import com.tekmentor.resiliencectf.scenarios.IResilienceScenario;
+import com.tekmentor.resiliencectf.scenarios.Scenario;
 import com.tekmentor.resiliencectf.scenarios.Scenarios;
+import com.tekmentor.resiliencectf.scenarios.model.RequestParameter;
+import com.tekmentor.resiliencectf.scenarios.model.RequestParameterBuilder;
 import com.tekmentor.resiliencectf.util.ResiliencyUtils;
 import com.tekmentor.resiliencectf.wiremock.CTFWireMock;
 import org.slf4j.Logger;
@@ -57,21 +60,28 @@ public class ResilienceCtfApplication implements CommandLineRunner {
         String[] dependencyUrls = ResiliencyUtils.parseDependentUrls(dependentUrls);
 
         IReportPublisher reportPublisher = new JsonReportPublisher();
+        RequestParameter requestParameter = new RequestParameterBuilder()
+                                            .setApiUrl(env.getProperty("api.url"))
+                                            .setDependencyUrls(dependencyUrls)
+                                            .setRequestType(env.getProperty("api.request.type", "GET"))
+                                            .setRequestBody(env.getProperty("api.request.body", ""))
+                                            .setApiLatencyThreshold(env.getProperty("api.latency.threshold",Integer.class,2000))
+                                            .setDependentApiThreshold(env.getProperty("api.dependency.latency.threshold",Integer.class, 2000))
+                                            .createRequestParameter();
 
-        Scenarios scenarios = new ResilienceScenarioBuilder()
-                .setDependencyUrls(dependencyUrls)
-                .setApiUrl(env.getProperty("api.url"))
-                .setRequestType(env.getProperty("api.request.type", "GET"))
-                .setRequestBody(env.getProperty("api.request.body", ""))
-                .attachReportPublisher(reportPublisher)
-                .createFaultScenarios()
-                .withAllScenarios();
+        Scenarios scenarios = new ResilienceScenarioBuilder(new Scenarios())
+                                    .setRequestParameter(requestParameter)
+                                    .attachReportPublisher(reportPublisher)
+                                    .withOnlyLatencyScenarios();
+//                                    .withOnlyFaultScenarios();
+//                                    .withBothFaultAndLatencyScenarios();
 
-        for (IResilienceScenario scenario : scenarios.getScenarios()){
+
+        for (IResilienceScenario scenario : scenarios.getResilienceScenarios()){
             scenario.executeScenario();
         }
 
-        scenarios.getReportPublisher().generateReport();
+        reportPublisher.generateReport();
 
         ctfWireMock.stopWiremockServer();
     }
