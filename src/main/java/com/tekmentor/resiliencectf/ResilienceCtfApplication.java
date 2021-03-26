@@ -8,6 +8,7 @@ import com.tekmentor.resiliencectf.report.JsonReportPublisher;
 import com.tekmentor.resiliencectf.scenarios.ResilienceScenarioBuilder;
 import com.tekmentor.resiliencectf.scenarios.IResilienceScenario;
 import com.tekmentor.resiliencectf.scenarios.Scenarios;
+import com.tekmentor.resiliencectf.util.ResiliencyUtils;
 import com.tekmentor.resiliencectf.wiremock.CTFWireMock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,10 +17,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.core.env.Environment;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.StringTokenizer;
 
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 
@@ -52,7 +49,7 @@ public class ResilienceCtfApplication implements CommandLineRunner {
         CTFWireMock ctfWireMock = startAndSetupWireMockServer();
 
         String dependentUrls = env.getProperty("api.thirdparty.dependencies");
-        String[] dependencyUrls = parseDependentUrls(dependentUrls);
+        String[] dependencyUrls = ResiliencyUtils.parseDependentUrls(dependentUrls);
 
         IReportPublisher reportPublisher = new JsonReportPublisher();
 
@@ -84,17 +81,6 @@ public class ResilienceCtfApplication implements CommandLineRunner {
         WireMock.configureFor(host, port);
         ctfWireMock.startWiremockServer();
         return ctfWireMock;
-    }
-
-    private String[] parseDependentUrls(String urls){
-        StringTokenizer tokens = new StringTokenizer( urls, ",", false );
-        String[] result = new String[tokens.countTokens()];
-        int i = 0;
-        while ( tokens.hasMoreTokens() ) {
-            result[i++] = tokens.nextToken();
-        }
-        System.out.println("result = " + Arrays.toString(result));
-        return result;
     }
 
     private WireMockConfiguration getWireMockConfiguration(int port) {
