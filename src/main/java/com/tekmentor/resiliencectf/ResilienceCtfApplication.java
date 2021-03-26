@@ -44,7 +44,12 @@ public class ResilienceCtfApplication implements CommandLineRunner {
         /**
          * Step 1 - Setup Wiremock Server and Start it
          * Step 2 - Initialize Reporting Publisher
-         * Step 3 - Us
+         * Step 3 - Set the metadata for Resilience Scenarios (like publisher, target url, etc.)
+         * Step 4 - Create Resilience Scenarios
+         * Step 5 - Register all the resilience scenarios
+         * Step 6 - Iterate over all the scenarios and execute it
+         * Step 7 - Generate the Execution report
+         * Step 8 - Stop the Wiremock server
          */
         CTFWireMock ctfWireMock = startAndSetupWireMockServer();
 
