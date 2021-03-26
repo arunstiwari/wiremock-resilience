@@ -7,8 +7,9 @@ import com.tekmentor.resiliencectf.report.IReportPublisher;
 import com.tekmentor.resiliencectf.report.ReportPublisher;
 import com.tekmentor.resiliencectf.report.model.ResilienceReport;
 import com.tekmentor.resiliencectf.scenarios.FaultScenarios;
-import com.tekmentor.resiliencectf.scenarios.FaultScenariosBuilder;
-import com.tekmentor.resiliencectf.scenarios.IFaultScenario;
+import com.tekmentor.resiliencectf.scenarios.ResilienceScenarioBuilder;
+import com.tekmentor.resiliencectf.scenarios.IResilienceScenario;
+import com.tekmentor.resiliencectf.scenarios.Scenarios;
 import com.tekmentor.resiliencectf.wiremock.CTFWireMock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +46,38 @@ public class ResilienceCtfApplication implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         LOG.info("Executing the command line runner");
+        /**
+         * Step 1 - Setup Wiremock Server and Start it
+         * Step 2 - Initialize Reporting Publisher
+         * Step 3 - Us
+         */
+        CTFWireMock ctfWireMock = startAndSetupWireMockServer();
 
+        String dependentUrls = env.getProperty("api.thirdparty.dependencies");
+        String[] dependencyUrls = parseDependentUrls(dependentUrls);
+
+        IReportPublisher reportPublisher = new ReportPublisher();
+
+        Scenarios scenarios = new ResilienceScenarioBuilder()
+                .setDependencyUrls(dependencyUrls)
+                .setApiUrl(env.getProperty("api.url"))
+                .setRequestType(env.getProperty("api.request.type", "GET"))
+                .setRequestBody(env.getProperty("api.request.body", ""))
+                .attachReportPublisher(reportPublisher)
+                .createFaultScenarios()
+                .withAllScenarios();
+
+        for (IResilienceScenario scenario : scenarios.getScenarios()){
+            scenario.executeScenario();
+        }
+        List<ResilienceReport> resilienceReports = scenarios.getReportPublisher().generateReport();
+        for (ResilienceReport report : resilienceReports){
+            System.out.println("report = " + report);
+        }
+        ctfWireMock.stopWiremockServer();
+    }
+
+    private CTFWireMock startAndSetupWireMockServer() {
         int port = Integer.parseInt(env.getProperty("wiremock.port")) ;
         String host = env.getProperty("wiremock.host");
 
@@ -54,35 +86,7 @@ public class ResilienceCtfApplication implements CommandLineRunner {
         CTFWireMock ctfWireMock = new CTFWireMock(wireMockConfiguration);
         WireMock.configureFor(host, port);
         ctfWireMock.startWiremockServer();
-
-        String dependentUrls = env.getProperty("api.thirdparty.dependencies");
-        String[] dependencyUrls = parseDependentUrls(dependentUrls);
-
-        IReportPublisher reportPublisher = new ReportPublisher();
-        //set the dependencyUrls to the Scenarios instance
-        FaultScenarios scenarios = new FaultScenariosBuilder()
-                .setDependencyUrls(dependencyUrls)
-                .setApiUrl(env.getProperty("api.url"))
-                .setRequestType(env.getProperty("api.request.type", "GET"))
-                .setRequestBody(env.getProperty("api.request.body", ""))
-                .attachReportPublisher(reportPublisher)
-                .createFaultScenarios()
-                .withAllScenarios();
-//                .withEmptyScenario()
-//                .withServiceUnavailabilityScenario()
-//                .withServerErrorScenario()
-//                .withMalformedResponseScenario()
-//                .withConnectionResetScenario()
-//                .withRandomDataCloseScenario();
-
-        for (IFaultScenario scenario : scenarios.getFaultScenarios()){
-            scenario.executeScenario();
-        }
-        List<ResilienceReport> resilienceReports = scenarios.getReportPublisher().generateReport();
-        for (ResilienceReport report : resilienceReports){
-            System.out.println("report = " + report);
-        }
-        ctfWireMock.stopWiremockServer();
+        return ctfWireMock;
     }
 
     private String[] parseDependentUrls(String urls){

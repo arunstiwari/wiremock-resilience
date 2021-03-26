@@ -22,12 +22,10 @@ public class GetRequestProcessor implements IRequestProcessor {
                     .then().extract().response().statusCode();
 
             LOG.info("statusCode = {} " , statusCode);
-            result.status(statusCode);
-            result.message("Successfull");
+           result.setExceptionAndStatus(statusCode);
         }catch (Exception e){
             LOG.error("Error Executing scenarios {}",e);
-            result.status(-1);
-            result.message("Failure");
+            result.setExceptionAndStatus(500);
             result.exception(e);
         }
 

@@ -20,6 +20,16 @@ public class ExecutionResult {
         this.exception = exception;
     }
 
+    public void setExceptionAndStatus(int status) {
+        if (status == 500){
+            this.status = -1;
+            this.message = "FAILED";
+        }else {
+            this.status = 0;
+            this.message = "SUCCESS";
+        }
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)

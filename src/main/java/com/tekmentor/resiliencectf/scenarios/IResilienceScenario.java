@@ -1,6 +1,6 @@
 package com.tekmentor.resiliencectf.scenarios;
 
-public interface IFaultScenario {
+public interface IResilienceScenario {
 
     void executeScenario();
 

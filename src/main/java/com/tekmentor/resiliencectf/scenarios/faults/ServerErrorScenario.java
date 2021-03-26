@@ -4,13 +4,13 @@ import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.tekmentor.resiliencectf.report.IReportPublisher;
 import com.tekmentor.resiliencectf.report.model.ResilienceReport;
 import com.tekmentor.resiliencectf.scenarios.FaultScenarios;
-import com.tekmentor.resiliencectf.scenarios.IFaultScenario;
+import com.tekmentor.resiliencectf.scenarios.IResilienceScenario;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
-public class ServerErrorScenario extends FaultScenarios implements IFaultScenario {
+public class ServerErrorScenario extends FaultScenarios implements IResilienceScenario {
     private static final Logger LOG = LoggerFactory.getLogger(ServerErrorScenario.class);
     private final ResilienceReport resilienceReport;
 
