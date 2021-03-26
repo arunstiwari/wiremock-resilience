@@ -4,6 +4,7 @@ import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import com.tekmentor.resiliencectf.extensions.CTFResponseTransformer;
 import com.tekmentor.resiliencectf.report.IReportPublisher;
+import com.tekmentor.resiliencectf.report.JsonReportPublisher;
 import com.tekmentor.resiliencectf.report.ReportPublisher;
 import com.tekmentor.resiliencectf.report.model.ResilienceReport;
 import com.tekmentor.resiliencectf.scenarios.FaultScenarios;
@@ -56,7 +57,7 @@ public class ResilienceCtfApplication implements CommandLineRunner {
         String dependentUrls = env.getProperty("api.thirdparty.dependencies");
         String[] dependencyUrls = parseDependentUrls(dependentUrls);
 
-        IReportPublisher reportPublisher = new ReportPublisher();
+        IReportPublisher reportPublisher = new JsonReportPublisher();
 
         Scenarios scenarios = new ResilienceScenarioBuilder()
                 .setDependencyUrls(dependencyUrls)
@@ -70,10 +71,9 @@ public class ResilienceCtfApplication implements CommandLineRunner {
         for (IResilienceScenario scenario : scenarios.getScenarios()){
             scenario.executeScenario();
         }
-        List<ResilienceReport> resilienceReports = scenarios.getReportPublisher().generateReport();
-        for (ResilienceReport report : resilienceReports){
-            System.out.println("report = " + report);
-        }
+
+        scenarios.getReportPublisher().generateReport();
+
         ctfWireMock.stopWiremockServer();
     }
 

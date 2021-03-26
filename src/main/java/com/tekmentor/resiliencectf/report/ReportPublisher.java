@@ -16,7 +16,10 @@ public class ReportPublisher implements IReportPublisher{
     }
 
     @Override
-    public List<ResilienceReport> generateReport() {
-        return reports;
+    public void generateReport() {
+
+        for (ResilienceReport report : reports){
+            System.out.println("report = " + report);
+        }
     }
 }

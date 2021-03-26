@@ -1,8 +1,10 @@
 package com.tekmentor.resiliencectf.report.model;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class ExecutionResult {
     private int status;
     private String message;

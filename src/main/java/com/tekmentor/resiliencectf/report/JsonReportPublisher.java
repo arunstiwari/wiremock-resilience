@@ -1,5 +1,6 @@
 package com.tekmentor.resiliencectf.report;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tekmentor.resiliencectf.report.model.ResilienceReport;
 
 import java.util.ArrayList;
@@ -10,11 +11,17 @@ public class JsonReportPublisher implements IReportPublisher {
 
     @Override
     public void registerReport(ResilienceReport report) {
-
+        reports.add(report);
     }
 
     @Override
-    public List<ResilienceReport> generateReport() {
-        return null;
+    public void generateReport() {
+        ObjectMapper mapper = new ObjectMapper();
+        try{
+            String jsonStr =  mapper.writeValueAsString(reports);
+            System.out.println("jsonStr = " + jsonStr);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 }

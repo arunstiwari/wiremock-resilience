@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface IReportPublisher {
     void registerReport(ResilienceReport report);
-    List<ResilienceReport> generateReport();
+    void generateReport();
 }
