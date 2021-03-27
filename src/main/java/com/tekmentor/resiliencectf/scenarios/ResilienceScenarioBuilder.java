@@ -3,9 +3,7 @@ package com.tekmentor.resiliencectf.scenarios;
 import com.tekmentor.resiliencectf.report.IReportPublisher;
 import com.tekmentor.resiliencectf.scenarios.faults.*;
 import com.tekmentor.resiliencectf.scenarios.latency.TimeLatencyScenario;
-import com.tekmentor.resiliencectf.scenarios.model.RequestParameter;
-
-import java.util.ArrayList;
+import com.tekmentor.resiliencectf.scenarios.config.RequestParameter;
 
 public class ResilienceScenarioBuilder {
     private RequestParameter requestParameter;

@@ -7,7 +7,7 @@ import com.github.tomakehurst.wiremock.stubbing.StubMapping;
 import com.tekmentor.resiliencectf.report.IReportPublisher;
 import com.tekmentor.resiliencectf.report.model.ContextReport;
 import com.tekmentor.resiliencectf.report.model.ResilienceReport;
-import com.tekmentor.resiliencectf.scenarios.model.RequestParameter;
+import com.tekmentor.resiliencectf.scenarios.config.RequestParameter;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -34,7 +34,7 @@ public class LatencyScenarios extends Scenario {
     public void constructScenarios(ResponseDefinitionBuilder responseWithHeader, ResilienceReport report, WireMockServer wireMockServer) {
         RequestParameter requestParameter = getRequestParameter();
 
-        Arrays.stream(requestParameter.getDependencyUrls()).forEach(dependencyUrl -> {
+        Arrays.stream(requestParameter.getThirdPartyUrls()).forEach(dependencyUrl -> {
             Map parameter =new HashMap();
             String matchedContext = getServiceContext(dependencyUrl);
             ContextReport ctxReport = new ContextReport();

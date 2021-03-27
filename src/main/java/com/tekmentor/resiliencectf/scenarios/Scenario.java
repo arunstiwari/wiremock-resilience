@@ -9,7 +9,7 @@ import com.tekmentor.resiliencectf.report.model.ExecutionResult;
 import com.tekmentor.resiliencectf.report.model.ResilienceReport;
 import com.tekmentor.resiliencectf.request.RequestFactory;
 import com.tekmentor.resiliencectf.request.processor.IRequestProcessor;
-import com.tekmentor.resiliencectf.scenarios.model.RequestParameter;
+import com.tekmentor.resiliencectf.scenarios.config.RequestParameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

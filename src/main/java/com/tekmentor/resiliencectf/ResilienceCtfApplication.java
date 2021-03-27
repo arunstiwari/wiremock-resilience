@@ -3,16 +3,13 @@ package com.tekmentor.resiliencectf;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
-import com.github.tomakehurst.wiremock.stubbing.StubMapping;
 import com.tekmentor.resiliencectf.extensions.CTFResponseTransformer;
 import com.tekmentor.resiliencectf.report.IReportPublisher;
 import com.tekmentor.resiliencectf.report.JsonReportPublisher;
 import com.tekmentor.resiliencectf.scenarios.ResilienceScenarioBuilder;
 import com.tekmentor.resiliencectf.scenarios.IResilienceScenario;
 import com.tekmentor.resiliencectf.scenarios.Scenarios;
-import com.tekmentor.resiliencectf.scenarios.model.RequestParameter;
-import com.tekmentor.resiliencectf.scenarios.model.RequestParameterBuilder;
-import com.tekmentor.resiliencectf.util.ResiliencyUtils;
+import com.tekmentor.resiliencectf.scenarios.config.RequestParameter;
 import com.tekmentor.resiliencectf.wiremock.CTFWireMock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,8 +18,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.core.env.Environment;
-
-import java.util.List;
 
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 
@@ -34,6 +29,9 @@ public class ResilienceCtfApplication implements CommandLineRunner {
 
     @Autowired
     IReportPublisher reportPublisher;
+
+    @Autowired
+    RequestParameter requestParameter;
 
     private static Logger LOG =LoggerFactory.getLogger(ResilienceCtfApplication.class);
 
@@ -57,20 +55,11 @@ public class ResilienceCtfApplication implements CommandLineRunner {
          * Step 7 - Generate the Execution report
          * Step 8 - Stop the Wiremock server
          */
-//        CTFWireMock ctfWireMock = startAndSetupWireMockServer();
-
-        String dependentUrls = env.getProperty("api.thirdparty.dependencies");
-        String[] dependencyUrls = ResiliencyUtils.parseDependentUrls(dependentUrls);
 
         IReportPublisher reportPublisher = new JsonReportPublisher();
-        RequestParameter requestParameter = new RequestParameterBuilder()
-                                            .setApiUrl(env.getProperty("api.url"))
-                                            .setDependencyUrls(dependencyUrls)
-                                            .setRequestType(env.getProperty("api.request.type", "GET"))
-                                            .setRequestBody(env.getProperty("api.request.body", ""))
-                                            .setApiLatencyThreshold(env.getProperty("api.latency.threshold",Integer.class,2000))
-                                            .setDependentApiThreshold(env.getProperty("api.dependency.latency.threshold",Integer.class, 2000))
-                                            .createRequestParameter();
+
+//        System.out.println("Request Parameter = "+ requestParameter);
+//        System.out.println("requestParameter.getThirdPartyDependencies().length = " + requestParameter.getThirdPartyDependencies().length);
         CTFWireMock ctfWireMock = startAndSetupWireMockServer();
         WireMockServer wireMockServer = ctfWireMock.getWireMockServer();
 
@@ -106,7 +95,7 @@ public class ResilienceCtfApplication implements CommandLineRunner {
     }
 
     private WireMockConfiguration getWireMockConfiguration(int port) {
-        String rootDirectory = env.getProperty("wiremock.root.dir", "/src/main/resources");
+        String rootDirectory = env.getProperty("wiremock.root.dir", "src/main/resources");
         WireMockConfiguration wireMockConfiguration = wireMockConfig()
                                 .port(port)
                                 .withRootDirectory(rootDirectory)

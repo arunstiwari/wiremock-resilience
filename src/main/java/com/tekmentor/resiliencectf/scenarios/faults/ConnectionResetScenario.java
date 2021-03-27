@@ -7,7 +7,7 @@ import com.tekmentor.resiliencectf.report.IReportPublisher;
 import com.tekmentor.resiliencectf.report.model.ResilienceReport;
 import com.tekmentor.resiliencectf.scenarios.FaultScenarios;
 import com.tekmentor.resiliencectf.scenarios.IResilienceScenario;
-import com.tekmentor.resiliencectf.scenarios.model.RequestParameter;
+import com.tekmentor.resiliencectf.scenarios.config.RequestParameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

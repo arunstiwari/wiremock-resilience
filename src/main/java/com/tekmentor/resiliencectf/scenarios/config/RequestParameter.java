@@ -1,31 +1,38 @@
-package com.tekmentor.resiliencectf.scenarios.model;
+package com.tekmentor.resiliencectf.scenarios.config;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
+@Component
+@ConfigurationProperties(prefix = "resilience")
 public class RequestParameter {
-    private String[] dependencyUrls;
+
+    @Value("${resilience.dependencyUrls}")
+    private String[] thirdpartyUrls;
+
+    @Value("${resilience.url}")
     private String apiUrl;
+
+    @Value("${resilience.request.type}")
     private String requestType;
+    @Value("${resilience.request.body}")
     private String requestBody;
+
+    @Value("${resilience.api.latency.threshold}")
     private int apiLatencyThreshold;
+
+    @Value("${resilience.api.dependency.latency.threshold}")
     private int dependentApiLatencyThreshold;
 
-    public RequestParameter(String[] dependencyUrls, String apiUrl, String requestType, String requestBody, int apiLatencyThreshold, int dependentApiLatencyThreshold) {
-        this.dependencyUrls = dependencyUrls;
-        this.apiUrl = apiUrl;
-        this.requestType = requestType;
-        this.requestBody = requestBody;
-        this.apiLatencyThreshold = apiLatencyThreshold;
-        this.dependentApiLatencyThreshold = dependentApiLatencyThreshold;
+    public String[] getThirdPartyUrls() {
+        return  this.thirdpartyUrls;
     }
 
-    public String[] getDependencyUrls() {
-        return dependencyUrls;
-    }
-
-    public void setDependencyUrls(String[] dependencyUrls) {
-        this.dependencyUrls = dependencyUrls;
+    public void setThirdpartyUrls(String[] thirdpartyUrls) {
+        this.thirdpartyUrls = thirdpartyUrls;
     }
 
     public String getApiUrl() {
@@ -71,7 +78,7 @@ public class RequestParameter {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
-                .append("dependencyUrls", dependencyUrls)
+                .append("thirdpartyUrls", thirdpartyUrls)
                 .append("apiUrl", apiUrl)
                 .append("requestType", requestType)
                 .append("requestBody", requestBody)

@@ -7,7 +7,7 @@ import com.github.tomakehurst.wiremock.matching.UrlPattern;
 import com.tekmentor.resiliencectf.report.IReportPublisher;
 import com.tekmentor.resiliencectf.report.model.ContextReport;
 import com.tekmentor.resiliencectf.report.model.ResilienceReport;
-import com.tekmentor.resiliencectf.scenarios.model.RequestParameter;
+import com.tekmentor.resiliencectf.scenarios.config.RequestParameter;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
@@ -58,9 +58,9 @@ public class FaultScenarios extends Scenario {
 
     @Override
     public void constructScenarios(ResponseDefinitionBuilder responseWithHeader, ResilienceReport report, WireMockServer wireMockServer) {
-        for (int i = 0; i < getRequestParameter().getDependencyUrls().length; ++i) {
+        for (int i = 0; i < getRequestParameter().getThirdPartyUrls().length; ++i) {
             WireMock.reset();
-            String matchedContext = getServiceContext(getRequestParameter().getDependencyUrls()[i]);
+            String matchedContext = getServiceContext(getRequestParameter().getThirdPartyUrls()[i]);
             ContextReport ctxReport = new ContextReport();
             ctxReport.setErrorContext(matchedContext);
 
