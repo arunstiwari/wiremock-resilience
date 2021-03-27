@@ -30,7 +30,7 @@ public class LatencyScenarios extends Scenario {
     }
 
     @Override
-    public void constructScenarios(ResponseDefinitionBuilder responseWithHeader, ResilienceReport report, CTFWireMock wireMockServer) {
+    public void constructScenarios(ResponseDefinitionBuilder responseDefinitionBuilder, ResilienceReport report, CTFWireMock wireMockServer) {
         RequestParameter requestParameter = getRequestParameter();
 
         Arrays.stream(requestParameter.getThirdPartyUrls()).forEach(dependencyUrl -> {
@@ -39,16 +39,16 @@ public class LatencyScenarios extends Scenario {
             ContextReport ctxReport = new ContextReport();
             ctxReport.setErrorContext(matchedContext);
             parameter.put("context", matchedContext);
-            parameter.put("latency", requestParameter.getApiLatencyThreshold());
+            parameter.put("latency", requestParameter.getDependentApiLatencyThreshold());
             UrlPattern urlPattern = urlEqualTo(matchedContext);
 
             String body = wireMockServer.getResponseBodyForGivenStubMapping(matchedContext);
-            responseWithHeader
+            responseDefinitionBuilder
                     .withTransformerParameters(parameter)
-                    .withFixedDelay(requestParameter.getApiLatencyThreshold())
+                    .withFixedDelay(requestParameter.getDependentApiLatencyThreshold())
                     .withBody(body);
 
-            getStubGenerator().generateStub(urlPattern, responseWithHeader);
+            getStubGenerator().generateStub(urlPattern, responseDefinitionBuilder);
             report.addContext(ctxReport);
         });
 

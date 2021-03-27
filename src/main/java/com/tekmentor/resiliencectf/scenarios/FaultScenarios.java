@@ -10,6 +10,8 @@ import com.tekmentor.resiliencectf.scenarios.config.RequestParameter;
 import com.tekmentor.resiliencectf.scenarios.stub.StubWithStatusAndHeaderGenerator;
 import com.tekmentor.resiliencectf.wiremock.CTFWireMock;
 
+import java.util.Arrays;
+
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
 public class FaultScenarios extends Scenario {
@@ -20,18 +22,18 @@ public class FaultScenarios extends Scenario {
 
     @Override
     public void constructScenarios(ResponseDefinitionBuilder responseWithHeader, ResilienceReport report, CTFWireMock wireMockServer) {
-        for (int i = 0; i < getRequestParameter().getThirdPartyUrls().length; ++i) {
+
+        Arrays.stream(getRequestParameter().getThirdPartyUrls()).forEach(thirdPartyUrl -> {
             WireMock.reset();
-            String matchedContext = getServiceContext(getRequestParameter().getThirdPartyUrls()[i]);
+            String matchedContext = getServiceContext(thirdPartyUrl);
             ContextReport ctxReport = new ContextReport();
             ctxReport.setErrorContext(matchedContext);
 
             UrlPattern urlPattern = urlEqualTo(matchedContext);
             getStubGenerator().generateStub(urlPattern,responseWithHeader);
-//            getStubForGivenStatusAndBodyWithHeader(urlPattern, responseWithHeader);
 
             report.addContext(ctxReport);
             invokeApiUrlEndpoint(report);
-        }
+        });
     }
 }

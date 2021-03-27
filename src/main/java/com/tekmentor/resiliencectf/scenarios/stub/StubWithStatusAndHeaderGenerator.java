@@ -13,10 +13,10 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 public class StubWithStatusAndHeaderGenerator implements IStubMapping{
 
     @Override
-    public StubMapping generateStub(UrlPattern urlPattern, ResponseDefinitionBuilder responseBuilderWithStatusAndBodyAndHeader) {
+    public StubMapping generateStub(UrlPattern urlPattern, ResponseDefinitionBuilder responseDefinitionBuilder) {
         MappingBuilder builder = get(urlPattern)
                 .willReturn(
-                        responseBuilderWithStatusAndBodyAndHeader
+                        responseDefinitionBuilder
                                 .withHeader("Content-Type", "application/json")
                 );
 
