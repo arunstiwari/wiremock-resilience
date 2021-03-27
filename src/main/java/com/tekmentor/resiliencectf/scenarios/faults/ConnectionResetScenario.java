@@ -1,5 +1,6 @@
 package com.tekmentor.resiliencectf.scenarios.faults;
 
+import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.github.tomakehurst.wiremock.http.Fault;
 import com.tekmentor.resiliencectf.report.IReportPublisher;
@@ -27,11 +28,11 @@ public class ConnectionResetScenario extends FaultScenarios implements IResilien
 //    }
 
     @Override
-    public void executeScenario() {
+    public void executeScenario(WireMockServer wireMockServer) {
         LOG.info("Execution of ConnectionReset  scenario started");
         this.connectionResetReport.setScenarioName("ConnectionReset");
         ResponseDefinitionBuilder responseWithHeader = aResponse().withFault(Fault.CONNECTION_RESET_BY_PEER);
-        constructScenarios(responseWithHeader,this.connectionResetReport);
+        constructScenarios(responseWithHeader,this.connectionResetReport, wireMockServer);
         LOG.info("Execution of ConnectionReset scenario finished");
     }
 }

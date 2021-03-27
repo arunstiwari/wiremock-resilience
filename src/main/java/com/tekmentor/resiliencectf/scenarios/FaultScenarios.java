@@ -1,12 +1,12 @@
 package com.tekmentor.resiliencectf.scenarios;
 
+import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.matching.UrlPattern;
 import com.tekmentor.resiliencectf.report.IReportPublisher;
 import com.tekmentor.resiliencectf.report.model.ContextReport;
 import com.tekmentor.resiliencectf.report.model.ResilienceReport;
-import com.tekmentor.resiliencectf.scenarios.faults.*;
 import com.tekmentor.resiliencectf.scenarios.model.RequestParameter;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
@@ -57,7 +57,7 @@ public class FaultScenarios extends Scenario {
 //    }
 
     @Override
-    public void constructScenarios(ResponseDefinitionBuilder responseWithHeader, ResilienceReport report) {
+    public void constructScenarios(ResponseDefinitionBuilder responseWithHeader, ResilienceReport report, WireMockServer wireMockServer) {
         for (int i = 0; i < getRequestParameter().getDependencyUrls().length; ++i) {
             WireMock.reset();
             String matchedContext = getServiceContext(getRequestParameter().getDependencyUrls()[i]);

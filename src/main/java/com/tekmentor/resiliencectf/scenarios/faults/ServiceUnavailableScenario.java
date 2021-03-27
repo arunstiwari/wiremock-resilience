@@ -1,5 +1,6 @@
 package com.tekmentor.resiliencectf.scenarios.faults;
 
+import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.tekmentor.resiliencectf.report.IReportPublisher;
 import com.tekmentor.resiliencectf.report.model.ResilienceReport;
@@ -22,11 +23,11 @@ public class ServiceUnavailableScenario extends FaultScenarios implements IResil
     }
 
     @Override
-    public void executeScenario() {
+    public void executeScenario(WireMockServer wireMockServer) {
         LOG.info("Execution of serviceUnavailability scenario started");
         this.resilienceReport.setScenarioName("ServiceUnavailabilityScenario");
         ResponseDefinitionBuilder responseWithHeader = serviceUnavailable();
-        constructScenarios(responseWithHeader, resilienceReport);
+        constructScenarios(responseWithHeader, resilienceReport, wireMockServer);
         LOG.info("Execution of serviceUnavailability scenario ended");
     }
 }

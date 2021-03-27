@@ -1,5 +1,6 @@
 package com.tekmentor.resiliencectf.scenarios.faults;
 
+import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.github.tomakehurst.wiremock.http.Fault;
 import com.tekmentor.resiliencectf.report.IReportPublisher;
@@ -28,11 +29,11 @@ public class EmptyResponseScenario extends FaultScenarios implements IResilience
 //    }
 
     @Override
-    public void executeScenario() {
+    public void executeScenario(WireMockServer wireMockServer) {
         LOG.info("Execution of EmptyData response scenario started");
         this.resilienceReport.setScenarioName("EmptyResponseScenario");
         ResponseDefinitionBuilder responseWithHeader = aResponse().withFault(Fault.EMPTY_RESPONSE);
-        constructScenarios(responseWithHeader, resilienceReport);
+        constructScenarios(responseWithHeader, resilienceReport, wireMockServer );
         LOG.info("Execution of EmptyData response scenario finished");
     }
 

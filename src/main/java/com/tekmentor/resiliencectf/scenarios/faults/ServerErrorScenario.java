@@ -1,5 +1,6 @@
 package com.tekmentor.resiliencectf.scenarios.faults;
 
+import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.tekmentor.resiliencectf.report.IReportPublisher;
 import com.tekmentor.resiliencectf.report.model.ResilienceReport;
@@ -21,12 +22,12 @@ public class ServerErrorScenario extends FaultScenarios implements IResilienceSc
     }
 
     @Override
-    public void executeScenario() {
+    public void executeScenario(WireMockServer wireMockServer) {
         LOG.info("Execution of serverError scenario started");
         this.resilienceReport.setScenarioName("ServerErrorsScenario");
         ResponseDefinitionBuilder responseWithHeader = serverError();
 
-        constructScenarios(responseWithHeader, resilienceReport);
+        constructScenarios(responseWithHeader, resilienceReport, wireMockServer);
         LOG.info("Execution of serverError scenario finished");
     }
 }

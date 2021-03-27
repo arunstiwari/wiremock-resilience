@@ -1,5 +1,6 @@
 package com.tekmentor.resiliencectf.scenarios.faults;
 
+import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.github.tomakehurst.wiremock.http.Fault;
 import com.tekmentor.resiliencectf.report.IReportPublisher;
@@ -22,11 +23,11 @@ public class RandomDataCloseScenario extends FaultScenarios implements IResilien
     }
 
     @Override
-    public void executeScenario() {
+    public void executeScenario(WireMockServer wireMockServer) {
         LOG.info("Execution of RandomDataClose Scenario  started");
         this.resilienceReport.setScenarioName("RandomDataClose Scenario");
         ResponseDefinitionBuilder responseWithHeader = aResponse().withFault(Fault.CONNECTION_RESET_BY_PEER);
-        constructScenarios(responseWithHeader, resilienceReport);
+        constructScenarios(responseWithHeader, resilienceReport, wireMockServer );
         LOG.info("Execution of RandomDataClose Scenario finished");
     }
 }

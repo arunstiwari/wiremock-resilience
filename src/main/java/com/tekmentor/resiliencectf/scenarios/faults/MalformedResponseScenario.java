@@ -1,5 +1,6 @@
 package com.tekmentor.resiliencectf.scenarios.faults;
 
+import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.github.tomakehurst.wiremock.http.Fault;
 import com.tekmentor.resiliencectf.report.IReportPublisher;
@@ -22,11 +23,11 @@ public class MalformedResponseScenario extends FaultScenarios implements IResili
     }
 
     @Override
-    public void executeScenario() {
+    public void executeScenario(WireMockServer wireMockServer) {
         LOG.info("Execution of Malformed response scenario started");
         this.resilienceReport.setScenarioName("MalformedResposeScenario");
         ResponseDefinitionBuilder responseWithHeader = aResponse().withFault(Fault.MALFORMED_RESPONSE_CHUNK);
-        constructScenarios(responseWithHeader, resilienceReport);
+        constructScenarios(responseWithHeader, resilienceReport, wireMockServer );
         LOG.info("Execution of Malformed response scenario finished");
     }
 }

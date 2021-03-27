@@ -1,13 +1,14 @@
 package com.tekmentor.resiliencectf;
 
+import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
+import com.github.tomakehurst.wiremock.stubbing.StubMapping;
 import com.tekmentor.resiliencectf.extensions.CTFResponseTransformer;
 import com.tekmentor.resiliencectf.report.IReportPublisher;
 import com.tekmentor.resiliencectf.report.JsonReportPublisher;
 import com.tekmentor.resiliencectf.scenarios.ResilienceScenarioBuilder;
 import com.tekmentor.resiliencectf.scenarios.IResilienceScenario;
-import com.tekmentor.resiliencectf.scenarios.Scenario;
 import com.tekmentor.resiliencectf.scenarios.Scenarios;
 import com.tekmentor.resiliencectf.scenarios.model.RequestParameter;
 import com.tekmentor.resiliencectf.scenarios.model.RequestParameterBuilder;
@@ -20,6 +21,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.core.env.Environment;
+
+import java.util.List;
 
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 
@@ -54,7 +57,7 @@ public class ResilienceCtfApplication implements CommandLineRunner {
          * Step 7 - Generate the Execution report
          * Step 8 - Stop the Wiremock server
          */
-        CTFWireMock ctfWireMock = startAndSetupWireMockServer();
+//        CTFWireMock ctfWireMock = startAndSetupWireMockServer();
 
         String dependentUrls = env.getProperty("api.thirdparty.dependencies");
         String[] dependencyUrls = ResiliencyUtils.parseDependentUrls(dependentUrls);
@@ -68,6 +71,9 @@ public class ResilienceCtfApplication implements CommandLineRunner {
                                             .setApiLatencyThreshold(env.getProperty("api.latency.threshold",Integer.class,2000))
                                             .setDependentApiThreshold(env.getProperty("api.dependency.latency.threshold",Integer.class, 2000))
                                             .createRequestParameter();
+        CTFWireMock ctfWireMock = startAndSetupWireMockServer();
+        WireMockServer wireMockServer = ctfWireMock.getWireMockServer();
+
 
         Scenarios scenarios = new ResilienceScenarioBuilder(new Scenarios())
                                     .setRequestParameter(requestParameter)
@@ -78,7 +84,7 @@ public class ResilienceCtfApplication implements CommandLineRunner {
 
 
         for (IResilienceScenario scenario : scenarios.getResilienceScenarios()){
-            scenario.executeScenario();
+            scenario.executeScenario(wireMockServer);
         }
 
         reportPublisher.generateReport();
@@ -93,14 +99,17 @@ public class ResilienceCtfApplication implements CommandLineRunner {
         WireMockConfiguration wireMockConfiguration = getWireMockConfiguration(port);
 
         CTFWireMock ctfWireMock = new CTFWireMock(wireMockConfiguration);
+
         WireMock.configureFor(host, port);
         ctfWireMock.startWiremockServer();
         return ctfWireMock;
     }
 
     private WireMockConfiguration getWireMockConfiguration(int port) {
+        String rootDirectory = env.getProperty("wiremock.root.dir", "/src/main/resources");
         WireMockConfiguration wireMockConfiguration = wireMockConfig()
                                 .port(port)
+                                .withRootDirectory(rootDirectory)
                                 .extensions(CTFResponseTransformer.class);
         return wireMockConfiguration;
     }

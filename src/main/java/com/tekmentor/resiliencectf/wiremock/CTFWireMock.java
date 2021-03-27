@@ -13,6 +13,7 @@ public class CTFWireMock {
         this.wireMockServer = new WireMockServer(wireMockConfiguration);
     }
 
+
     public void startWiremockServer() {
         LOG.info("Starting wiremockserver");
         if (wireMockServer.isRunning()){

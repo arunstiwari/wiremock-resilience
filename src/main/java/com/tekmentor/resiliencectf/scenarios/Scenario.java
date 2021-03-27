@@ -1,5 +1,6 @@
 package com.tekmentor.resiliencectf.scenarios;
 
+import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.MappingBuilder;
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.github.tomakehurst.wiremock.matching.UrlPattern;
@@ -11,9 +12,6 @@ import com.tekmentor.resiliencectf.request.processor.IRequestProcessor;
 import com.tekmentor.resiliencectf.scenarios.model.RequestParameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
@@ -80,6 +78,6 @@ public abstract class Scenario  {
 //        this.resilienceScenarios.add(scenario);
 //    }
 
-    protected abstract void constructScenarios(ResponseDefinitionBuilder responseWithHeader, ResilienceReport report);
+    protected abstract void constructScenarios(ResponseDefinitionBuilder responseWithHeader, ResilienceReport report, WireMockServer wireMockServer);
 //    public abstract Scenarios withAllScenarios();
 }
