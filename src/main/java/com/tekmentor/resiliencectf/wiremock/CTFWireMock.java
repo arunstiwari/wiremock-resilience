@@ -2,8 +2,11 @@ package com.tekmentor.resiliencectf.wiremock;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
+import com.github.tomakehurst.wiremock.stubbing.StubMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 public class CTFWireMock {
     Logger LOG = LoggerFactory.getLogger(CTFWireMock.class);
@@ -40,5 +43,16 @@ public class CTFWireMock {
 
     public void setWireMockServer(WireMockServer wireMockServer) {
         this.wireMockServer = wireMockServer;
+    }
+
+    public String getResponseBodyForGivenStubMapping( String matchedContext) {
+        List<StubMapping> stubMappings = wireMockServer.getStubMappings();
+        System.out.println( ", matchedContext = " + matchedContext);
+        stubMappings.stream().forEach(stubMapping -> {
+            System.out.println("stubMapping.getRequest().getUrl() = " + stubMapping.getRequest().getUrl());
+        });
+        StubMapping mapping = stubMappings.stream().filter(stubMapping -> stubMapping.getRequest().getUrl().equals(matchedContext)).findFirst().get();
+        String body = mapping.getResponse().getBody();
+        return body;
     }
 }

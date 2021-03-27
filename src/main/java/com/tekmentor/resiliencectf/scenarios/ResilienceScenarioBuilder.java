@@ -2,8 +2,11 @@ package com.tekmentor.resiliencectf.scenarios;
 
 import com.tekmentor.resiliencectf.report.IReportPublisher;
 import com.tekmentor.resiliencectf.scenarios.faults.*;
-import com.tekmentor.resiliencectf.scenarios.latency.TimeLatencyScenario;
+import com.tekmentor.resiliencectf.scenarios.latency.LatencyResilienceScenario;
 import com.tekmentor.resiliencectf.scenarios.config.RequestParameter;
+import com.tekmentor.resiliencectf.util.AvailableScenarios;
+
+import java.util.List;
 
 public class ResilienceScenarioBuilder {
     private RequestParameter requestParameter;
@@ -24,39 +27,33 @@ public class ResilienceScenarioBuilder {
     }
 
     public Scenarios withBothFaultAndLatencyScenarios() {
-        this.scenarios.registerScenario(new EmptyResponseScenario(this.requestParameter, this.reportPublisher));
-        this.scenarios.registerScenario(new ServiceUnavailableScenario(this.requestParameter, this.reportPublisher));
-        this.scenarios.registerScenario(new ServerErrorScenario(this.requestParameter, this.reportPublisher));
-        this.scenarios.registerScenario(new MalformedResponseScenario(this.requestParameter, this.reportPublisher));
-        this.scenarios.registerScenario(new ConnectionResetScenario(this.requestParameter, this.reportPublisher));
-        this.scenarios.registerScenario(new RandomDataCloseScenario(this.requestParameter, this.reportPublisher ));
+        List<AvailableScenarios> allLatencyScenarios = AvailableScenarios.getAllLatencyScenarios();
+        for (AvailableScenarios scenario : allLatencyScenarios){
+            this.scenarios.registerScenario(new LatencyResilienceScenario(this.requestParameter,this.reportPublisher, scenario));
+        }
 
-        this.scenarios.registerScenario(new TimeLatencyScenario(this.requestParameter,this.reportPublisher));
+        List<AvailableScenarios> allFaultsScenarios = AvailableScenarios.getAllFaultsScenarios();
+        for (AvailableScenarios fault : allFaultsScenarios){
+            this.scenarios.registerScenario(new FaultResilienceScenario(this.requestParameter, this.reportPublisher,fault));
+        }
         return this.scenarios;
     }
 
 
     public Scenarios withOnlyFaultScenarios() {
-        this.scenarios.registerScenario(new EmptyResponseScenario(this.requestParameter, this.reportPublisher));
-        this.scenarios.registerScenario(new ServiceUnavailableScenario(this.requestParameter, this.reportPublisher));
-        this.scenarios.registerScenario(new ServerErrorScenario(this.requestParameter, this.reportPublisher));
-        this.scenarios.registerScenario(new MalformedResponseScenario(this.requestParameter, this.reportPublisher));
-        this.scenarios.registerScenario(new ConnectionResetScenario(this.requestParameter, this.reportPublisher));
-        this.scenarios.registerScenario(new RandomDataCloseScenario(this.requestParameter, this.reportPublisher ));
-
+        List<AvailableScenarios> allFaultsScenarios = AvailableScenarios.getAllFaultsScenarios();
+        for (AvailableScenarios fault : allFaultsScenarios){
+            this.scenarios.registerScenario(new FaultResilienceScenario(this.requestParameter, this.reportPublisher,fault));
+        }
         return this.scenarios;
     }
 
     public Scenarios withOnlyLatencyScenarios() {
-        this.scenarios.registerScenario(new TimeLatencyScenario(this.requestParameter,this.reportPublisher));
+        List<AvailableScenarios> allLatencyScenarios = AvailableScenarios.getAllLatencyScenarios();
+        for (AvailableScenarios scenario : allLatencyScenarios){
+            this.scenarios.registerScenario(new LatencyResilienceScenario(this.requestParameter,this.reportPublisher, scenario));
+        }
         return this.scenarios;
     }
-
-//    public Scenario createScenarios() {
-//        Scenario scenarios = new Scenario(this.requestParameter, this.reportPublisher);
-//
-////        Scenarios scenarios = new FaultScenarios(this.requestParameter, this.reportPublisher);
-//        return scenarios;
-//    }
 
 }

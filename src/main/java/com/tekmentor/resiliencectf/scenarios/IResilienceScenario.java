@@ -1,9 +1,9 @@
 package com.tekmentor.resiliencectf.scenarios;
 
-import com.github.tomakehurst.wiremock.WireMockServer;
+import com.tekmentor.resiliencectf.wiremock.CTFWireMock;
 
 public interface IResilienceScenario {
 
-    void executeScenario(WireMockServer wireMockServer);
+    void executeScenario(CTFWireMock wireMockServer);
 
 }

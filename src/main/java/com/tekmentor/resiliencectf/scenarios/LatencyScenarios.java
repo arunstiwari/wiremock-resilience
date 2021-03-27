@@ -1,17 +1,16 @@
 package com.tekmentor.resiliencectf.scenarios;
 
-import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.github.tomakehurst.wiremock.matching.UrlPattern;
-import com.github.tomakehurst.wiremock.stubbing.StubMapping;
 import com.tekmentor.resiliencectf.report.IReportPublisher;
 import com.tekmentor.resiliencectf.report.model.ContextReport;
 import com.tekmentor.resiliencectf.report.model.ResilienceReport;
 import com.tekmentor.resiliencectf.scenarios.config.RequestParameter;
+import com.tekmentor.resiliencectf.scenarios.stub.StubWithStatusAndHeaderGenerator;
+import com.tekmentor.resiliencectf.wiremock.CTFWireMock;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
@@ -27,11 +26,11 @@ import static com.github.tomakehurst.wiremock.client.WireMock.*;
 public class LatencyScenarios extends Scenario {
 
     public LatencyScenarios(RequestParameter requestParameter, IReportPublisher reportPublisher) {
-        super(requestParameter, reportPublisher);
+        super(requestParameter, reportPublisher, new StubWithStatusAndHeaderGenerator());
     }
 
     @Override
-    public void constructScenarios(ResponseDefinitionBuilder responseWithHeader, ResilienceReport report, WireMockServer wireMockServer) {
+    public void constructScenarios(ResponseDefinitionBuilder responseWithHeader, ResilienceReport report, CTFWireMock wireMockServer) {
         RequestParameter requestParameter = getRequestParameter();
 
         Arrays.stream(requestParameter.getThirdPartyUrls()).forEach(dependencyUrl -> {
@@ -43,28 +42,16 @@ public class LatencyScenarios extends Scenario {
             parameter.put("latency", requestParameter.getApiLatencyThreshold());
             UrlPattern urlPattern = urlEqualTo(matchedContext);
 
-            String body = getResponseBodyForGivenStubMapping(wireMockServer,matchedContext);
+            String body = wireMockServer.getResponseBodyForGivenStubMapping(matchedContext);
             responseWithHeader
                     .withTransformerParameters(parameter)
                     .withFixedDelay(requestParameter.getApiLatencyThreshold())
                     .withBody(body);
 
-            getStubForGivenStatusAndBodyWithHeader(urlPattern, responseWithHeader);
+            getStubGenerator().generateStub(urlPattern, responseWithHeader);
             report.addContext(ctxReport);
         });
 
         invokeApiUrlEndpoint(report);
-
-    }
-
-    private String getResponseBodyForGivenStubMapping(WireMockServer wireMockServer, String matchedContext) {
-        List<StubMapping> stubMappings = wireMockServer.getStubMappings();
-        System.out.println( ", matchedContext = " + matchedContext);
-        stubMappings.stream().forEach(stubMapping -> {
-            System.out.println("stubMapping.getRequest().getUrl() = " + stubMapping.getRequest().getUrl());
-        });
-        StubMapping mapping = stubMappings.stream().filter(stubMapping -> stubMapping.getRequest().getUrl().equals(matchedContext)).findFirst().get();
-        String body = mapping.getResponse().getBody();
-        return body;
     }
 }

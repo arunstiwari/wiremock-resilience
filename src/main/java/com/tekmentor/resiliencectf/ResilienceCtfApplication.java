@@ -1,6 +1,5 @@
 package com.tekmentor.resiliencectf;
 
-import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import com.tekmentor.resiliencectf.extensions.CTFResponseTransformer;
@@ -58,26 +57,21 @@ public class ResilienceCtfApplication implements CommandLineRunner {
 
         IReportPublisher reportPublisher = new JsonReportPublisher();
 
-//        System.out.println("Request Parameter = "+ requestParameter);
-//        System.out.println("requestParameter.getThirdPartyDependencies().length = " + requestParameter.getThirdPartyDependencies().length);
         CTFWireMock ctfWireMock = startAndSetupWireMockServer();
-        WireMockServer wireMockServer = ctfWireMock.getWireMockServer();
-
 
         Scenarios scenarios = new ResilienceScenarioBuilder(new Scenarios())
                                     .setRequestParameter(requestParameter)
                                     .attachReportPublisher(reportPublisher)
-                                    .withOnlyLatencyScenarios();
+//                                    .withOnlyLatencyScenarios();
 //                                    .withOnlyFaultScenarios();
-//                                    .withBothFaultAndLatencyScenarios();
+                                    .withBothFaultAndLatencyScenarios();
 
 
         for (IResilienceScenario scenario : scenarios.getResilienceScenarios()){
-            scenario.executeScenario(wireMockServer);
+            scenario.executeScenario(ctfWireMock );
         }
 
         reportPublisher.generateReport();
-
         ctfWireMock.stopWiremockServer();
     }
 
