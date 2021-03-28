@@ -10,6 +10,15 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "resilience")
 public class ResilienceConfiguration {
 
+    @Value("${resilience.wiremock.port}")
+    private int port;
+
+    @Value("${resilience.wiremock.host: localhost}")
+    private String host;
+
+    @Value("${resilience.wiremock.root.dir:src/main/resources}")
+    private String rootDir ;
+
     @Value("${resilience.dependencyUrls}")
     private String[] thirdpartyUrls;
 
@@ -26,6 +35,30 @@ public class ResilienceConfiguration {
 
     @Value("${resilience.api.dependency.latency.threshold}")
     private int dependentApiLatencyThreshold;
+
+    public int getPort() {
+        return port;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    public String getRootDir() {
+        return rootDir;
+    }
+
+    public void setRootDir(String rootDir) {
+        this.rootDir = rootDir;
+    }
 
     public String[] getThirdPartyUrls() {
         return  this.thirdpartyUrls;
@@ -78,6 +111,8 @@ public class ResilienceConfiguration {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                .append("wiremockhost", host)
+                .append("port", port)
                 .append("thirdpartyUrls", thirdpartyUrls)
                 .append("apiUrl", apiUrl)
                 .append("requestType", requestType)

@@ -70,23 +70,19 @@ public class ResilienceCtfApplication implements CommandLineRunner {
     }
 
     private CTFWireMock startAndSetupWireMockServer() {
-        int port = Integer.parseInt(env.getProperty("wiremock.port")) ;
-        String host = env.getProperty("wiremock.host");
-
-        WireMockConfiguration wireMockConfiguration = getWireMockConfiguration(port);
+        WireMockConfiguration wireMockConfiguration = getWireMockConfiguration();
 
         CTFWireMock ctfWireMock = new CTFWireMock(wireMockConfiguration);
 
-        WireMock.configureFor(host, port);
+        WireMock.configureFor(configuration.getHost(), configuration.getPort());
         ctfWireMock.startWiremockServer();
         return ctfWireMock;
     }
 
-    private WireMockConfiguration getWireMockConfiguration(int port) {
-        String rootDirectory = env.getProperty("wiremock.root.dir", "src/main/resources");
+    private WireMockConfiguration getWireMockConfiguration() {
         return wireMockConfig()
-                                .port(port)
-                                .withRootDirectory(rootDirectory)
+                                .port(configuration.getPort())
+                                .withRootDirectory(configuration.getRootDir())
                                 .extensions(CTFResponseTransformer.class);
     }
 }
