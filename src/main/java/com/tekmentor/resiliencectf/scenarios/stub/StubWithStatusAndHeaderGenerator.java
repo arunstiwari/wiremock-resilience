@@ -10,7 +10,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 
 @Component
-public class StubWithStatusAndHeaderGenerator implements IStubMapping{
+public class StubWithStatusAndHeaderGenerator implements IStubGenerator {
 
     @Override
     public StubMapping generateStub(UrlPattern urlPattern, ResponseDefinitionBuilder responseDefinitionBuilder) {

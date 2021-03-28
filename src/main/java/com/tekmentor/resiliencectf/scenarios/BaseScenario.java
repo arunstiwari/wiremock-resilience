@@ -7,7 +7,7 @@ import com.tekmentor.resiliencectf.report.model.ResilienceReport;
 import com.tekmentor.resiliencectf.request.RequestFactory;
 import com.tekmentor.resiliencectf.request.processor.IRequestProcessor;
 import com.tekmentor.resiliencectf.config.ResilienceConfiguration;
-import com.tekmentor.resiliencectf.scenarios.stub.IStubMapping;
+import com.tekmentor.resiliencectf.scenarios.stub.IStubGenerator;
 import com.tekmentor.resiliencectf.wiremock.CTFWireMock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,15 +17,15 @@ public abstract class BaseScenario {
     private static final Logger LOG = LoggerFactory.getLogger(FaultScenarios.class);
     private ResilienceConfiguration configuration;
     private IReportPublisher reportPublisher;
-    private IStubMapping stubGenerator;
+    private IStubGenerator stubGenerator;
 
-    public BaseScenario(ResilienceConfiguration configuration, IReportPublisher reportPublisher, IStubMapping stubGenerator) {
+    public BaseScenario(ResilienceConfiguration configuration, IReportPublisher reportPublisher, IStubGenerator stubGenerator) {
         this.configuration = configuration;
         this.reportPublisher = reportPublisher;
         this.stubGenerator = stubGenerator;
     }
 
-    public IStubMapping getStubGenerator() {
+    public IStubGenerator getStubGenerator() {
         return stubGenerator;
     }
 
