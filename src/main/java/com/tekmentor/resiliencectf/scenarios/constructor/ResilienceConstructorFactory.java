@@ -7,7 +7,7 @@ public class ResilienceConstructorFactory {
             case "LATENCY":
                 return new LatencyScenarioConstructor();
             case "FAULT":
-                return new LatencyScenarioConstructor();
+                return new FaultScenarioConstructor();
             default:
                 return null;
         }

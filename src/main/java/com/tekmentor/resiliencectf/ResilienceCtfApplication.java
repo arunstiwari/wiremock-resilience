@@ -12,7 +12,6 @@ import com.tekmentor.resiliencectf.config.ResilienceConfiguration;
 import com.tekmentor.resiliencectf.wiremock.CTFWireMock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -23,16 +22,19 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMoc
 @SpringBootApplication
 public class ResilienceCtfApplication implements CommandLineRunner {
 
-    @Autowired
-    private Environment env;
+    private final Environment env;
 
-    @Autowired
-    IReportPublisher reportPublisher;
+    final IReportPublisher reportPublisher;
 
-    @Autowired
-    ResilienceConfiguration requestParameter;
+    final ResilienceConfiguration configuration;
 
-    private static Logger LOG =LoggerFactory.getLogger(ResilienceCtfApplication.class);
+    private static final Logger LOG =LoggerFactory.getLogger(ResilienceCtfApplication.class);
+
+    public ResilienceCtfApplication(Environment env, IReportPublisher reportPublisher, ResilienceConfiguration configuration) {
+        this.env = env;
+        this.reportPublisher = reportPublisher;
+        this.configuration = configuration;
+    }
 
     public static void main(String[] args) {
         LOG.info("Starting the Resilience Test");
@@ -44,23 +46,15 @@ public class ResilienceCtfApplication implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         LOG.info("Executing the command line runner");
-        /**
-         * Step 1 - Setup Wiremock Server and Start it
-         * Step 2 - Initialize Reporting Publisher
-         * Step 3 - Set the metadata for Resilience Scenarios (like publisher, target url, etc.)
-         * Step 4 - Create Resilience Scenarios
-         * Step 5 - Register all the resilience scenarios
-         * Step 6 - Iterate over all the scenarios and execute it
-         * Step 7 - Generate the Execution report
-         * Step 8 - Stop the Wiremock server
-         */
 
         IReportPublisher reportPublisher = new JsonReportPublisher();
 
         CTFWireMock ctfWireMock = startAndSetupWireMockServer();
 
+        LOG.info("resilienceConfiguration = {}",configuration);
+
         ResilienceScenarios scenarios = new ResilienceScenarioBuilder(new ResilienceScenarios())
-                                    .setRequestParameter(requestParameter)
+                                    .setRequestParameter(configuration)
                                     .attachReportPublisher(reportPublisher)
 //                                    .withOnlyLatencyScenarios();
 //                                    .withOnlyFaultScenarios();
@@ -90,10 +84,9 @@ public class ResilienceCtfApplication implements CommandLineRunner {
 
     private WireMockConfiguration getWireMockConfiguration(int port) {
         String rootDirectory = env.getProperty("wiremock.root.dir", "src/main/resources");
-        WireMockConfiguration wireMockConfiguration = wireMockConfig()
+        return wireMockConfig()
                                 .port(port)
                                 .withRootDirectory(rootDirectory)
                                 .extensions(CTFResponseTransformer.class);
-        return wireMockConfiguration;
     }
 }

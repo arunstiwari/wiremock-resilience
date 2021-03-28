@@ -47,12 +47,11 @@ public class CTFWireMock {
 
     public String getResponseBodyForGivenStubMapping( String matchedContext) {
         List<StubMapping> stubMappings = wireMockServer.getStubMappings();
-        System.out.println( ", matchedContext = " + matchedContext);
+        LOG.info( "matchedContext = {}" , matchedContext);
         stubMappings.stream().forEach(stubMapping -> {
-            System.out.println("stubMapping.getRequest().getUrl() = " + stubMapping.getRequest().getUrl());
+            LOG.info("stubMapping.getRequest().getUrl() ={} " , stubMapping.getRequest().getUrl());
         });
         StubMapping mapping = stubMappings.stream().filter(stubMapping -> stubMapping.getRequest().getUrl().equals(matchedContext)).findFirst().get();
-        String body = mapping.getResponse().getBody();
-        return body;
+        return mapping.getResponse().getBody();
     }
 }
