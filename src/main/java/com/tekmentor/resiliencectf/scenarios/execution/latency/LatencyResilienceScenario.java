@@ -1,11 +1,11 @@
-package com.tekmentor.resiliencectf.scenarios.latency;
+package com.tekmentor.resiliencectf.scenarios.execution.latency;
 
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.tekmentor.resiliencectf.report.IReportPublisher;
 import com.tekmentor.resiliencectf.report.model.ResilienceReport;
-import com.tekmentor.resiliencectf.scenarios.IResilienceScenario;
+import com.tekmentor.resiliencectf.scenarios.execution.IResilienceScenario;
 import com.tekmentor.resiliencectf.scenarios.LatencyScenarios;
-import com.tekmentor.resiliencectf.scenarios.config.RequestParameter;
+import com.tekmentor.resiliencectf.config.ResilienceConfiguration;
 import com.tekmentor.resiliencectf.util.AvailableScenarios;
 import com.tekmentor.resiliencectf.wiremock.CTFWireMock;
 import org.slf4j.Logger;
@@ -18,7 +18,7 @@ public class LatencyResilienceScenario extends LatencyScenarios implements IResi
     private final ResilienceReport resilienceReport;
     private final AvailableScenarios scenario;
 
-    public LatencyResilienceScenario(RequestParameter requestParameter, IReportPublisher reportPublisher, AvailableScenarios scenario) {
+    public LatencyResilienceScenario(ResilienceConfiguration requestParameter, IReportPublisher reportPublisher, AvailableScenarios scenario) {
         super(requestParameter, reportPublisher);
         this.resilienceReport = new ResilienceReport();
         this.scenario = scenario;

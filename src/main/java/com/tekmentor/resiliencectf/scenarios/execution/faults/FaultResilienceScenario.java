@@ -1,10 +1,10 @@
-package com.tekmentor.resiliencectf.scenarios.faults;
+package com.tekmentor.resiliencectf.scenarios.execution.faults;
 
 import com.tekmentor.resiliencectf.report.IReportPublisher;
 import com.tekmentor.resiliencectf.report.model.ResilienceReport;
 import com.tekmentor.resiliencectf.scenarios.FaultScenarios;
-import com.tekmentor.resiliencectf.scenarios.IResilienceScenario;
-import com.tekmentor.resiliencectf.scenarios.config.RequestParameter;
+import com.tekmentor.resiliencectf.scenarios.execution.IResilienceScenario;
+import com.tekmentor.resiliencectf.config.ResilienceConfiguration;
 import com.tekmentor.resiliencectf.util.AvailableScenarios;
 import com.tekmentor.resiliencectf.wiremock.CTFWireMock;
 import org.slf4j.Logger;
@@ -15,7 +15,7 @@ public class FaultResilienceScenario extends FaultScenarios implements IResilien
     private final ResilienceReport resilienceReport;
     private AvailableScenarios scenario;
 
-    public FaultResilienceScenario(RequestParameter requestParameter, IReportPublisher reportPublisher, AvailableScenarios scenario) {
+    public FaultResilienceScenario(ResilienceConfiguration requestParameter, IReportPublisher reportPublisher, AvailableScenarios scenario) {
         super(requestParameter,reportPublisher );
         this.resilienceReport = new ResilienceReport();
         this.scenario = scenario;

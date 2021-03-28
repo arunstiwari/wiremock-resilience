@@ -1,4 +1,4 @@
-package com.tekmentor.resiliencectf.scenarios;
+package com.tekmentor.resiliencectf.scenarios.execution;
 
 import com.tekmentor.resiliencectf.wiremock.CTFWireMock;
 

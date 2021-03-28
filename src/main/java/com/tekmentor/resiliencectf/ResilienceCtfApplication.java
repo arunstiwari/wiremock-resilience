@@ -6,9 +6,9 @@ import com.tekmentor.resiliencectf.extensions.CTFResponseTransformer;
 import com.tekmentor.resiliencectf.report.IReportPublisher;
 import com.tekmentor.resiliencectf.report.JsonReportPublisher;
 import com.tekmentor.resiliencectf.scenarios.ResilienceScenarioBuilder;
-import com.tekmentor.resiliencectf.scenarios.IResilienceScenario;
-import com.tekmentor.resiliencectf.scenarios.Scenarios;
-import com.tekmentor.resiliencectf.scenarios.config.RequestParameter;
+import com.tekmentor.resiliencectf.scenarios.execution.IResilienceScenario;
+import com.tekmentor.resiliencectf.scenarios.ResilienceScenarios;
+import com.tekmentor.resiliencectf.config.ResilienceConfiguration;
 import com.tekmentor.resiliencectf.wiremock.CTFWireMock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +30,7 @@ public class ResilienceCtfApplication implements CommandLineRunner {
     IReportPublisher reportPublisher;
 
     @Autowired
-    RequestParameter requestParameter;
+    ResilienceConfiguration requestParameter;
 
     private static Logger LOG =LoggerFactory.getLogger(ResilienceCtfApplication.class);
 
@@ -59,7 +59,7 @@ public class ResilienceCtfApplication implements CommandLineRunner {
 
         CTFWireMock ctfWireMock = startAndSetupWireMockServer();
 
-        Scenarios scenarios = new ResilienceScenarioBuilder(new Scenarios())
+        ResilienceScenarios scenarios = new ResilienceScenarioBuilder(new ResilienceScenarios())
                                     .setRequestParameter(requestParameter)
                                     .attachReportPublisher(reportPublisher)
 //                                    .withOnlyLatencyScenarios();

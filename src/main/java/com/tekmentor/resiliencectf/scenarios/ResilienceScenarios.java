@@ -1,12 +1,14 @@
 package com.tekmentor.resiliencectf.scenarios;
 
+import com.tekmentor.resiliencectf.scenarios.execution.IResilienceScenario;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class Scenarios {
+public class ResilienceScenarios {
     List<IResilienceScenario> resilienceScenarios = new ArrayList<>();
 
-    public Scenarios() {
+    public ResilienceScenarios() {
     }
 
     public List<IResilienceScenario> getResilienceScenarios() {

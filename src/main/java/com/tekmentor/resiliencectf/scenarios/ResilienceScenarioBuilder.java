@@ -1,23 +1,23 @@
 package com.tekmentor.resiliencectf.scenarios;
 
 import com.tekmentor.resiliencectf.report.IReportPublisher;
-import com.tekmentor.resiliencectf.scenarios.faults.*;
-import com.tekmentor.resiliencectf.scenarios.latency.LatencyResilienceScenario;
-import com.tekmentor.resiliencectf.scenarios.config.RequestParameter;
+import com.tekmentor.resiliencectf.scenarios.execution.faults.FaultResilienceScenario;
+import com.tekmentor.resiliencectf.scenarios.execution.latency.LatencyResilienceScenario;
+import com.tekmentor.resiliencectf.config.ResilienceConfiguration;
 import com.tekmentor.resiliencectf.util.AvailableScenarios;
 
 import java.util.List;
 
 public class ResilienceScenarioBuilder {
-    private RequestParameter requestParameter;
+    private ResilienceConfiguration requestParameter;
     private IReportPublisher reportPublisher;
-    private Scenarios scenarios;
+    private ResilienceScenarios scenarios;
 
-    public ResilienceScenarioBuilder(Scenarios scenarios) {
+    public ResilienceScenarioBuilder(ResilienceScenarios scenarios) {
         this.scenarios = scenarios;
     }
 
-    public ResilienceScenarioBuilder setRequestParameter(RequestParameter requestParameter) {
+    public ResilienceScenarioBuilder setRequestParameter(ResilienceConfiguration requestParameter) {
         this.requestParameter = requestParameter;
         return this;
     }
@@ -26,7 +26,7 @@ public class ResilienceScenarioBuilder {
         return this;
     }
 
-    public Scenarios withBothFaultAndLatencyScenarios() {
+    public ResilienceScenarios withBothFaultAndLatencyScenarios() {
         List<AvailableScenarios> allLatencyScenarios = AvailableScenarios.getAllLatencyScenarios();
         for (AvailableScenarios scenario : allLatencyScenarios){
             this.scenarios.registerScenario(new LatencyResilienceScenario(this.requestParameter,this.reportPublisher, scenario));
@@ -40,7 +40,7 @@ public class ResilienceScenarioBuilder {
     }
 
 
-    public Scenarios withOnlyFaultScenarios() {
+    public ResilienceScenarios withOnlyFaultScenarios() {
         List<AvailableScenarios> allFaultsScenarios = AvailableScenarios.getAllFaultsScenarios();
         for (AvailableScenarios fault : allFaultsScenarios){
             this.scenarios.registerScenario(new FaultResilienceScenario(this.requestParameter, this.reportPublisher,fault));
@@ -48,7 +48,7 @@ public class ResilienceScenarioBuilder {
         return this.scenarios;
     }
 
-    public Scenarios withOnlyLatencyScenarios() {
+    public ResilienceScenarios withOnlyLatencyScenarios() {
         List<AvailableScenarios> allLatencyScenarios = AvailableScenarios.getAllLatencyScenarios();
         for (AvailableScenarios scenario : allLatencyScenarios){
             this.scenarios.registerScenario(new LatencyResilienceScenario(this.requestParameter,this.reportPublisher, scenario));

@@ -1,4 +1,4 @@
-package com.tekmentor.resiliencectf.scenarios.config;
+package com.tekmentor.resiliencectf.config;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @ConfigurationProperties(prefix = "resilience")
-public class RequestParameter {
+public class ResilienceConfiguration {
 
     @Value("${resilience.dependencyUrls}")
     private String[] thirdpartyUrls;
