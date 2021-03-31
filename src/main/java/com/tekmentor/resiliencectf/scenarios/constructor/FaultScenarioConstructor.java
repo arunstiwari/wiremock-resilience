@@ -4,6 +4,8 @@ import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.matching.UrlPattern;
 import com.tekmentor.resiliencectf.config.ResilienceConfiguration;
+import com.tekmentor.resiliencectf.extensions.CTFResilienceRequest;
+import com.tekmentor.resiliencectf.extensions.CTFResponseTransformer;
 import com.tekmentor.resiliencectf.report.model.ContextReport;
 import com.tekmentor.resiliencectf.scenarios.stub.IStubGenerator;
 import com.tekmentor.resiliencectf.util.ResiliencyUtils;
@@ -21,6 +23,14 @@ public class FaultScenarioConstructor implements IResilienceConstructor{
         ctxReport.setErrorContext(matchedContext);
 
         UrlPattern urlPattern = urlEqualTo(matchedContext);
+
+        //Resetting the transformer parameter
+        CTFResponseTransformer ctfResponseTransformer = wireMockServer.getCtfResponseTransformer();
+        CTFResilienceRequest ctfResilienceRequest = ctfResponseTransformer.getCtfResilienceRequest();
+        ctfResilienceRequest.registerContext(matchedContext, 0);
+        ctfResponseTransformer.setCtfResilienceRequest(ctfResilienceRequest);
+
+
         stubGenerator.generateStub(urlPattern,responseDefinitionBuilder);
         return ctxReport;
     }

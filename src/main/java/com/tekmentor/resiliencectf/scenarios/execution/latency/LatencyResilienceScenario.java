@@ -18,8 +18,8 @@ public class LatencyResilienceScenario extends LatencyScenarios implements IResi
     private final ResilienceReport resilienceReport;
     private final AvailableScenarios scenario;
 
-    public LatencyResilienceScenario(ResilienceConfiguration requestParameter, IReportPublisher reportPublisher, AvailableScenarios scenario) {
-        super(requestParameter, reportPublisher);
+    public LatencyResilienceScenario(ResilienceConfiguration configuration, IReportPublisher reportPublisher, AvailableScenarios scenario) {
+        super(configuration, reportPublisher);
         this.resilienceReport = new ResilienceReport();
         this.scenario = scenario;
     }

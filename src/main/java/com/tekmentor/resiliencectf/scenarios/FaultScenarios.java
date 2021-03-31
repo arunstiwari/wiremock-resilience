@@ -22,6 +22,7 @@ public class FaultScenarios extends BaseScenario {
     public void constructScenarios(ResponseDefinitionBuilder responseWithHeader, ResilienceReport report, CTFWireMock wireMockServer) {
         ResilienceConfiguration configuration = getConfiguration();
         IResilienceConstructor resilienceConstructor = ResilienceConstructorFactory.getResilienceConstructor("FAULT");
+
         Arrays.stream(getConfiguration().getThirdPartyUrls()).forEach(dependencyUrl -> {
 
             ContextReport contextReport = resilienceConstructor.constructScenarios(configuration, dependencyUrl, wireMockServer, responseWithHeader, getStubGenerator());

@@ -11,11 +11,23 @@ import org.slf4j.LoggerFactory;
 public class CTFResponseTransformer extends ResponseDefinitionTransformer {
     private static Logger LOG = LoggerFactory.getLogger(CTFResponseTransformer.class);
 
+    private CTFResilienceRequest ctfResilienceRequest;
+
+    public CTFResponseTransformer(CTFResilienceRequest ctfResilienceRequest) {
+        this.ctfResilienceRequest = ctfResilienceRequest;
+    }
+
     @Override
     public ResponseDefinition transform(Request request, ResponseDefinition responseDefinition, FileSource files, Parameters parameters) {
-        LOG.info( "request = {} , parameters = ", request, parameters);
+        LOG.info( "request = {} , parameters = ", request.getUrl(), parameters);
+
+        LOG.info("CTFResilienceRequest = {}",ctfResilienceRequest);
         try {
-            Thread.sleep(100);
+            if (ctfResilienceRequest.getContexts().containsKey(request.getUrl())){
+                Integer latency = ctfResilienceRequest.getContexts().get(request.getUrl());
+                LOG.info("Going to sleep for {} milliseconds",latency);
+                Thread.sleep(latency);
+            }
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -25,5 +37,13 @@ public class CTFResponseTransformer extends ResponseDefinitionTransformer {
     @Override
     public String getName() {
         return "CTFResponseTransformer";
+    }
+
+    public CTFResilienceRequest getCtfResilienceRequest() {
+        return ctfResilienceRequest;
+    }
+
+    public void setCtfResilienceRequest(CTFResilienceRequest ctfResilienceRequest) {
+        this.ctfResilienceRequest = ctfResilienceRequest;
     }
 }

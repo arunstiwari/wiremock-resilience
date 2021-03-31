@@ -1,8 +1,5 @@
 package com.tekmentor.resiliencectf;
 
-import com.github.tomakehurst.wiremock.client.WireMock;
-import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
-import com.tekmentor.resiliencectf.extensions.CTFResponseTransformer;
 import com.tekmentor.resiliencectf.report.IReportPublisher;
 import com.tekmentor.resiliencectf.report.JsonReportPublisher;
 import com.tekmentor.resiliencectf.scenarios.ResilienceScenarioBuilder;
@@ -16,8 +13,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.core.env.Environment;
-
-import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 
 @SpringBootApplication
 public class ResilienceCtfApplication implements CommandLineRunner {
@@ -40,6 +35,7 @@ public class ResilienceCtfApplication implements CommandLineRunner {
         LOG.info("Starting the Resilience Test");
         LOG.debug(" args: {}",args);
         SpringApplication.run(ResilienceCtfApplication.class, args);
+
         LOG.info("Finished the Resilience Test");
     }
 
@@ -49,40 +45,27 @@ public class ResilienceCtfApplication implements CommandLineRunner {
 
         IReportPublisher reportPublisher = new JsonReportPublisher();
 
-        CTFWireMock ctfWireMock = startAndSetupWireMockServer();
+
+        CTFWireMock ctfWireMock = new CTFWireMock(configuration);
 
         LOG.info("resilienceConfiguration = {}",configuration);
 
         ResilienceScenarios scenarios = new ResilienceScenarioBuilder(new ResilienceScenarios())
                                     .setRequestParameter(configuration)
                                     .attachReportPublisher(reportPublisher)
-//                                    .withOnlyLatencyScenarios();
+                                    .withOnlyLatencyScenarios();
 //                                    .withOnlyFaultScenarios();
-                                    .withBothFaultAndLatencyScenarios();
+//                                    .withBothFaultAndLatencyScenarios();
+
 
 
         for (IResilienceScenario scenario : scenarios.getResilienceScenarios()){
             scenario.executeScenario(ctfWireMock );
         }
 
+        Thread.sleep(200000);
         reportPublisher.generateReport();
         ctfWireMock.stopWiremockServer();
     }
 
-    private CTFWireMock startAndSetupWireMockServer() {
-        WireMockConfiguration wireMockConfiguration = getWireMockConfiguration();
-
-        CTFWireMock ctfWireMock = new CTFWireMock(wireMockConfiguration);
-
-        WireMock.configureFor(configuration.getHost(), configuration.getPort());
-        ctfWireMock.startWiremockServer();
-        return ctfWireMock;
-    }
-
-    private WireMockConfiguration getWireMockConfiguration() {
-        return wireMockConfig()
-                                .port(configuration.getPort())
-                                .withRootDirectory(configuration.getRootDir())
-                                .extensions(CTFResponseTransformer.class);
-    }
 }

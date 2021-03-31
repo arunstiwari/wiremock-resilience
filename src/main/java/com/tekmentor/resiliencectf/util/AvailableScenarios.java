@@ -29,9 +29,10 @@ public enum AvailableScenarios {
     RandomDataCloseScenario("RandomDataClose Scenario", false,
             aResponse().withFault(Fault.RANDOM_DATA_THEN_CLOSE)
             ),
-    TimeLatencyScenario("Time Latency Scenario", true,
-                aResponse()
-            );
+//    TimeLatencyScenario("Time Latency Scenario", true,
+//                aResponse()
+//            ),
+    LoadLatencyResilienceScenario("Time Latency With 5 Requests Per Second", true,aResponse());
 
     private final String scenarioName;
     private final boolean isLatencyScenario;

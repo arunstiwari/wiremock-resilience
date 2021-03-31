@@ -29,6 +29,10 @@ public abstract class BaseScenario {
         return stubGenerator;
     }
 
+    public IReportPublisher getReportPublisher() {
+        return reportPublisher;
+    }
+
     public ResilienceConfiguration getConfiguration() {
         return configuration;
     }

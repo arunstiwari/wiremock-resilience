@@ -14,6 +14,10 @@ public class ExecutionResult {
         this.status = status;
     }
 
+    public int getStatus() {
+        return status;
+    }
+
     public void message(String message) {
         this.message = message;
     }
@@ -22,10 +26,15 @@ public class ExecutionResult {
         this.exception = exception;
     }
 
-    public void setExceptionAndStatus(int status) {
+    public Exception getException() {
+        return exception;
+    }
+
+    public void setExceptionAndStatus(int status, String body) {
         if (status == 500){
             this.status = -1;
             this.message = "FAILED";
+            this.exception = new Exception(body);
         }else {
             this.status = 0;
             this.message = "SUCCESS";
