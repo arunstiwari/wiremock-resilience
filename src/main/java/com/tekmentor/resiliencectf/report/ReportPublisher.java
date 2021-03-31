@@ -22,4 +22,9 @@ public class ReportPublisher implements IReportPublisher{
             System.out.println("report = " + report);
         }
     }
+
+    @Override
+    public void sendReport() {
+
+    }
 }

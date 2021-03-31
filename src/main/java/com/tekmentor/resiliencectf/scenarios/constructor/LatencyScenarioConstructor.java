@@ -4,6 +4,7 @@ import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.tekmentor.resiliencectf.config.ResilienceConfiguration;
 import com.tekmentor.resiliencectf.extensions.CTFResilienceRequest;
 import com.tekmentor.resiliencectf.extensions.CTFResponseTransformer;
+import com.tekmentor.resiliencectf.extensions.ContextMap;
 import com.tekmentor.resiliencectf.report.model.ContextReport;
 import com.tekmentor.resiliencectf.scenarios.stub.IStubGenerator;
 import com.tekmentor.resiliencectf.util.ResiliencyUtils;
@@ -27,7 +28,7 @@ public class LatencyScenarioConstructor implements IResilienceConstructor{
         //Resetting the transformer parameter
         CTFResponseTransformer ctfResponseTransformer = wireMockServer.getCtfResponseTransformer();
         CTFResilienceRequest ctfResilienceRequest = ctfResponseTransformer.getCtfResilienceRequest();
-        ctfResilienceRequest.registerContext(matchedContext, configuration.getDependentApiLatencyThreshold());
+        ctfResilienceRequest.registerContext(matchedContext, new ContextMap("",configuration.getDependentApiLatencyThreshold()));
         ctfResponseTransformer.setCtfResilienceRequest(ctfResilienceRequest);
         configuration.setDependentApiLatencyThreshold(configuration.getBackUpdependentApiLatencyThreshold());
         return ctxReport;

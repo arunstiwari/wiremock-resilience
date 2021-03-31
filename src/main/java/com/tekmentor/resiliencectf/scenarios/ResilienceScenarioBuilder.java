@@ -83,5 +83,4 @@ public class ResilienceScenarioBuilder {
         }
         return this.scenarios;
     }
-
 }

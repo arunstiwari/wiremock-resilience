@@ -19,14 +19,16 @@ public class CTFResponseTransformer extends ResponseDefinitionTransformer {
 
     @Override
     public ResponseDefinition transform(Request request, ResponseDefinition responseDefinition, FileSource files, Parameters parameters) {
-        LOG.info( "request = {} , parameters = ", request.getUrl(), parameters);
+        LOG.info( "request url = {} , headers = {}, method = {}", request.getUrl(), request.getHeaders(), request.getMethod());
 
         LOG.info("CTFResilienceRequest = {}",ctfResilienceRequest);
         try {
             if (ctfResilienceRequest.getContexts().containsKey(request.getUrl())){
-                Integer latency = ctfResilienceRequest.getContexts().get(request.getUrl());
-                LOG.info("Going to sleep for {} milliseconds",latency);
-                Thread.sleep(latency);
+                ContextMap contextMap = ctfResilienceRequest.getContexts().get(request.getUrl());
+//                contextMap.getScn()
+//                Integer latency = ctfResilienceRequest.getContexts().get(request.getUrl());
+                LOG.info("Going to sleep for {} milliseconds",ctfResilienceRequest.getLatencyPeriod());
+                Thread.sleep(ctfResilienceRequest.getLatencyPeriod());
             }
         } catch (InterruptedException e) {
             e.printStackTrace();

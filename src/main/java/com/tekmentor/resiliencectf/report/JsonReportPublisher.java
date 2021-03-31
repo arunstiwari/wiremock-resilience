@@ -24,4 +24,9 @@ public class JsonReportPublisher implements IReportPublisher {
             e.printStackTrace();
         }
     }
+
+    @Override
+    public void sendReport() {
+
+    }
 }

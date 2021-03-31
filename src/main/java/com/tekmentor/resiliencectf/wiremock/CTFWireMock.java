@@ -21,9 +21,13 @@ public class CTFWireMock {
     private ResilienceConfiguration configuration;
     private CTFResponseTransformer ctfResponseTransformer;
 
-    public CTFWireMock( ResilienceConfiguration configuration) {
+    public CTFWireMock(ResilienceConfiguration configuration) {
+        this(configuration,0);
+    }
+
+    public CTFWireMock(ResilienceConfiguration configuration, int latencyPeriod) {
         this.configuration = configuration;
-        this.ctfResponseTransformer = new CTFResponseTransformer(new CTFResilienceRequest());
+        this.ctfResponseTransformer = new CTFResponseTransformer(new CTFResilienceRequest(latencyPeriod));
         startAndSetupWireMockServer();
     }
 

@@ -7,17 +7,30 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class CTFResilienceRequest {
-    private Map<String, Integer> contexts = new HashMap<>();
+    //contextUrl, contextObj
+    //contextUrl, latency
+    //request has (header,
+    private Map<String, ContextMap> contexts = new HashMap<>();
+    private int latencyPeriod;
 
     public CTFResilienceRequest() {
+        this(0);
     }
 
-    public void registerContext(String key, Integer value){
-        this.contexts.put(key, value);
+    public CTFResilienceRequest(int latencyPeriod) {
+        this.latencyPeriod = latencyPeriod;
     }
 
-    public Map<String, Integer> getContexts() {
+    public void registerContext(String key, ContextMap context){
+        this.contexts.put(key, context);
+    }
+
+    public Map<String, ContextMap> getContexts() {
         return contexts;
+    }
+
+    public int getLatencyPeriod() {
+        return latencyPeriod;
     }
 
     @Override
