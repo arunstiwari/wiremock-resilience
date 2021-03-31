@@ -29,7 +29,7 @@ public class LatencyScenarioConstructor implements IResilienceConstructor{
         CTFResilienceRequest ctfResilienceRequest = ctfResponseTransformer.getCtfResilienceRequest();
         ctfResilienceRequest.registerContext(matchedContext, configuration.getDependentApiLatencyThreshold());
         ctfResponseTransformer.setCtfResilienceRequest(ctfResilienceRequest);
-
+        configuration.setDependentApiLatencyThreshold(configuration.getBackUpdependentApiLatencyThreshold());
         return ctxReport;
     }
 }

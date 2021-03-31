@@ -7,5 +7,9 @@ import com.tekmentor.resiliencectf.scenarios.stub.IStubGenerator;
 import com.tekmentor.resiliencectf.wiremock.CTFWireMock;
 
 public interface IResilienceConstructor {
-    ContextReport constructScenarios(ResilienceConfiguration configuration, String dependencyUrl, CTFWireMock wireMockServer, ResponseDefinitionBuilder responseDefinitionBuilder, IStubGenerator stubGenerator);
+    ContextReport constructScenarios(ResilienceConfiguration configuration,
+                                     String dependencyUrl,
+                                     CTFWireMock wireMockServer,
+                                     ResponseDefinitionBuilder responseDefinitionBuilder,
+                                     IStubGenerator stubGenerator);
 }

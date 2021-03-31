@@ -32,7 +32,9 @@ public class LatencyScenarios extends BaseScenario {
         IResilienceConstructor resilienceConstructor = ResilienceConstructorFactory.getResilienceConstructor("LATENCY");
 
         Arrays.stream(configuration.getThirdPartyUrls()).forEach(dependencyUrl -> {
-            ContextReport contextReport = resilienceConstructor.constructScenarios(configuration, dependencyUrl, wireMockServer, responseDefinitionBuilder, getStubGenerator());
+            ContextReport contextReport = resilienceConstructor.constructScenarios(
+                    configuration, dependencyUrl, wireMockServer, responseDefinitionBuilder, getStubGenerator()
+            );
             report.addContext(contextReport);
         });
 

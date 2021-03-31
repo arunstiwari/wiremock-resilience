@@ -36,6 +36,9 @@ public class ResilienceConfiguration {
     @Value("${resilience.api.dependency.latency.threshold}")
     private int dependentApiLatencyThreshold;
 
+    @Value("${resilience.api.dependency.latency.threshold}")
+    private int backUpdependentApiLatencyThreshold;
+
     public int getPort() {
         return port;
     }
@@ -108,6 +111,14 @@ public class ResilienceConfiguration {
         this.dependentApiLatencyThreshold = dependentApiLatencyThreshold;
     }
 
+    public int getBackUpdependentApiLatencyThreshold() {
+        return backUpdependentApiLatencyThreshold;
+    }
+
+    public void setBackUpdependentApiLatencyThreshold(int backUpdependentApiLatencyThreshold) {
+        this.backUpdependentApiLatencyThreshold = backUpdependentApiLatencyThreshold;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
@@ -119,6 +130,7 @@ public class ResilienceConfiguration {
                 .append("requestBody", requestBody)
                 .append("apiLatencyThreshold", apiLatencyThreshold)
                 .append("dependentApiLatencyThreshold", dependentApiLatencyThreshold)
+                .append("backUpdependentApiLatencyThreshold",backUpdependentApiLatencyThreshold)
                 .toString();
     }
 }

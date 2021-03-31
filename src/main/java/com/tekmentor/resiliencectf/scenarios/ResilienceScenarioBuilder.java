@@ -8,11 +8,16 @@ import com.tekmentor.resiliencectf.scenarios.execution.latency.LoadLatencyResili
 import com.tekmentor.resiliencectf.util.AvailableScenarios;
 
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 public class ResilienceScenarioBuilder {
     private ResilienceConfiguration requestParameter;
     private IReportPublisher reportPublisher;
     private ResilienceScenarios scenarios;
+
+    ScheduledExecutorService executor1 = Executors.newScheduledThreadPool(2);
+//    ScheduledExecutorService executor2 = Executors.newSingleThreadScheduledExecutor();
 
     public ResilienceScenarioBuilder(ResilienceScenarios scenarios) {
         this.scenarios = scenarios;
@@ -27,10 +32,22 @@ public class ResilienceScenarioBuilder {
         return this;
     }
 
+
     public ResilienceScenarios withBothFaultAndLatencyScenarios() {
         List<AvailableScenarios> allLatencyScenarios = AvailableScenarios.getAllLatencyScenarios();
-        for (AvailableScenarios scenario : allLatencyScenarios){
-            this.scenarios.registerScenario(new LoadLatencyResilienceScenario(this.requestParameter,this.reportPublisher, scenario));
+                for (AvailableScenarios scenario : allLatencyScenarios){
+            if (scenario.isLoad()) {
+                LoadLatencyResilienceScenario loadLatencyResilienceScenario = new LoadLatencyResilienceScenario(this.requestParameter, this.reportPublisher, scenario);
+                if (scenario.getScenarioName().equals("TimeLatencyWith10SecondsAnd5RequestsPerSecond")){
+                    loadLatencyResilienceScenario.setExecutor(this.executor1,10);
+                }else {
+                    loadLatencyResilienceScenario.setExecutor(this.executor1,30);
+                }
+
+                this.scenarios.registerScenario(loadLatencyResilienceScenario);
+            }else {
+                this.scenarios.registerScenario(new LatencyResilienceScenario(this.requestParameter, this.reportPublisher, scenario));
+            }
         }
 
         List<AvailableScenarios> allFaultsScenarios = AvailableScenarios.getAllFaultsScenarios();
@@ -52,7 +69,17 @@ public class ResilienceScenarioBuilder {
     public ResilienceScenarios withOnlyLatencyScenarios() {
         List<AvailableScenarios> allLatencyScenarios = AvailableScenarios.getAllLatencyScenarios();
         for (AvailableScenarios scenario : allLatencyScenarios){
-            this.scenarios.registerScenario(new LoadLatencyResilienceScenario(this.requestParameter,this.reportPublisher, scenario));
+            if (scenario.isLoad()) {
+                LoadLatencyResilienceScenario loadLatencyResilienceScenario = new LoadLatencyResilienceScenario(this.requestParameter, this.reportPublisher, scenario);
+                if (scenario.getScenarioName().equals("TimeLatencyWith10SecondsAnd5RequestsPerSecond")){
+                    loadLatencyResilienceScenario.setExecutor(this.executor1,10000);
+                }else {
+                    loadLatencyResilienceScenario.setExecutor(this.executor1,30000);
+                }
+                this.scenarios.registerScenario(loadLatencyResilienceScenario);
+            }else {
+                this.scenarios.registerScenario(new LatencyResilienceScenario(this.requestParameter, this.reportPublisher, scenario));
+            }
         }
         return this.scenarios;
     }

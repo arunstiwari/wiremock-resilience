@@ -1,8 +1,5 @@
 package com.tekmentor.resiliencectf.scenarios.execution.latency;
 
-import com.tekmentor.resiliencectf.report.model.ResilienceReport;
-import com.tekmentor.resiliencectf.util.AvailableScenarios;
-
 import java.util.Arrays;
 import java.util.TimerTask;
 import java.util.function.Consumer;

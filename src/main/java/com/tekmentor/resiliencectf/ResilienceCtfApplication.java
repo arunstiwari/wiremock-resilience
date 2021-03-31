@@ -14,6 +14,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.core.env.Environment;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+
 @SpringBootApplication
 public class ResilienceCtfApplication implements CommandLineRunner {
 
@@ -53,8 +56,8 @@ public class ResilienceCtfApplication implements CommandLineRunner {
         ResilienceScenarios scenarios = new ResilienceScenarioBuilder(new ResilienceScenarios())
                                     .setRequestParameter(configuration)
                                     .attachReportPublisher(reportPublisher)
-                                    .withOnlyLatencyScenarios();
-//                                    .withOnlyFaultScenarios();
+//                                    .withOnlyLatencyScenarios();
+                                    .withOnlyFaultScenarios();
 //                                    .withBothFaultAndLatencyScenarios();
 
 
@@ -66,6 +69,8 @@ public class ResilienceCtfApplication implements CommandLineRunner {
         Thread.sleep(200000);
         reportPublisher.generateReport();
         ctfWireMock.stopWiremockServer();
+
+
     }
 
 }

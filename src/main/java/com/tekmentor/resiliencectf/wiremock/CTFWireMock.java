@@ -3,6 +3,7 @@ package com.tekmentor.resiliencectf.wiremock;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
+import com.github.tomakehurst.wiremock.http.Request;
 import com.github.tomakehurst.wiremock.stubbing.StubMapping;
 import com.tekmentor.resiliencectf.config.ResilienceConfiguration;
 import com.tekmentor.resiliencectf.extensions.CTFResilienceRequest;
@@ -15,7 +16,7 @@ import java.util.List;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 
 public class CTFWireMock {
-    Logger LOG = LoggerFactory.getLogger(CTFWireMock.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CTFWireMock.class);
     WireMockServer wireMockServer;
     private ResilienceConfiguration configuration;
     private CTFResponseTransformer ctfResponseTransformer;
@@ -72,9 +73,13 @@ public class CTFWireMock {
                 .jettyAcceptors(10)
                 .jettyAcceptQueueSize(100)
                 .asynchronousResponseEnabled(true)
+                .asynchronousResponseThreads(20)
+                .networkTrafficListener()
         ;
         this.wireMockServer = new WireMockServer(wireMockConfiguration);
-
+        this.wireMockServer.addMockServiceRequestListener(
+                CTFWireMock::requestReceived
+        );
         WireMock.configureFor(configuration.getHost(), configuration.getPort());
         startWiremockServer();
     }
@@ -88,5 +93,13 @@ public class CTFWireMock {
 
     public CTFResponseTransformer getCtfResponseTransformer() {
         return ctfResponseTransformer;
+    }
+
+    protected static void requestReceived(Request inRequest,
+                                          com.github.tomakehurst.wiremock.http.Response inResponse) {
+        LOG.info("WireMock request at URL: {}", inRequest.getAbsoluteUrl());
+        LOG.info("WireMock request headers: \n{}", inRequest.getHeaders());
+        LOG.info("WireMock response body: \n{}", inResponse.getBodyAsString());
+        LOG.info("WireMock response headers: \n{}", inResponse.getHeaders());
     }
 }
