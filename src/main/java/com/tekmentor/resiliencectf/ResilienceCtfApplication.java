@@ -2,13 +2,10 @@ package com.tekmentor.resiliencectf;
 
 import com.tekmentor.resiliencectf.report.IReportPublisher;
 import com.tekmentor.resiliencectf.report.JsonReportPublisher;
-import com.tekmentor.resiliencectf.scenario1.ResilienceCreator;
-import com.tekmentor.resiliencectf.scenario1.Scenarios;
-import com.tekmentor.resiliencectf.scenario1.model.ResilienceResult;
-import com.tekmentor.resiliencectf.scenario1.scenario.Scenario;
-import com.tekmentor.resiliencectf.scenarios.ResilienceScenarioBuilder;
-import com.tekmentor.resiliencectf.scenarios.execution.IResilienceScenario;
-import com.tekmentor.resiliencectf.scenarios.ResilienceScenarios;
+import com.tekmentor.resiliencectf.scenario.ResilienceCreator;
+import com.tekmentor.resiliencectf.scenario.Scenarios;
+import com.tekmentor.resiliencectf.scenario.model.ResilienceResult;
+import com.tekmentor.resiliencectf.scenario.scenario.Scenario;
 import com.tekmentor.resiliencectf.config.ResilienceConfiguration;
 import com.tekmentor.resiliencectf.wiremock.CTFWireMock;
 import org.slf4j.Logger;
@@ -22,8 +19,6 @@ import rx.subjects.PublishSubject;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 
 @SpringBootApplication
 public class ResilienceCtfApplication implements CommandLineRunner {
@@ -97,65 +92,45 @@ public class ResilienceCtfApplication implements CommandLineRunner {
         PublishSubject<List<ResilienceResult>> results1 = PublishSubject.create();
         results1.subscribe(getFirstObserver());
 
-
         CTFWireMock ctfWireMock = new CTFWireMock(configuration);
 
+        //Fault Scenarios
         Scenarios faultScenarios = new ResilienceCreator(configuration, reportPublisher,ctfWireMock).simulateAllFaultScenarios();
+        executeScenarios(reportPublisher, results, results1,0,faultScenarios,ctfWireMock);
 
-        for(Scenario scenario : faultScenarios.getScenarios()){
-            List<ResilienceResult> resilienceResults = scenario.execute();
-            results.addAll(resilienceResults);
-            results1.onNext(resilienceResults);
-        }
-
-        ctfWireMock.stopWiremockServer();
 
         //90s latency
-//         ctfWireMock = new CTFWireMock(configuration,90000);
-//
-//        Scenarios latencyScenariosWith90sLatency = new ResilienceCreator(configuration, reportPublisher,ctfWireMock).simulateAllLoadLatencyScenarios();
-//
-//        for(Scenario scenario : latencyScenariosWith90sLatency.getScenarios()){
-//            List<ResilienceResult> resilienceResults = scenario.execute();
-//            results.addAll(resilienceResults);
-//            results1.onNext(resilienceResults);
-//        }
-//
-//        ctfWireMock.stopWiremockServer();
+        ctfWireMock = new CTFWireMock(configuration,90000);
+        Scenarios latencyScenariosWith90sLatency = new ResilienceCreator(configuration, reportPublisher,ctfWireMock).simulateAllLoadLatencyScenarios();
+        executeScenarios(reportPublisher, results, results1,90000,latencyScenariosWith90sLatency,ctfWireMock);
 
 
         //10s latency
         ctfWireMock = new CTFWireMock(configuration,10000);
-
         Scenarios latencyScenariosWith10sLatency = new ResilienceCreator(configuration, reportPublisher,ctfWireMock).simulate10sLatencyScenarios();
+        executeScenarios(reportPublisher, results, results1,200000,latencyScenariosWith10sLatency,ctfWireMock);
 
-        for(Scenario scenario : latencyScenariosWith10sLatency.getScenarios()){
+
+        //30s latency
+        ctfWireMock = new CTFWireMock(configuration,30000);
+        Scenarios latencyScenariosWith30sLatency = new ResilienceCreator(configuration, reportPublisher,ctfWireMock).simulate30sLatencyScenarios();
+        executeScenarios(reportPublisher, results, results1,200000,latencyScenariosWith30sLatency,ctfWireMock);
+
+        reportPublisher.generateReport();
+    }
+
+    private void executeScenarios(IReportPublisher reportPublisher,
+                                  List<ResilienceResult> results,
+                                  PublishSubject<List<ResilienceResult>> results1,
+                                  int sleepPeriod, Scenarios scenarios,CTFWireMock ctfWireMock) throws InterruptedException {
+
+        for(Scenario scenario : scenarios.getScenarios()){
             List<ResilienceResult> resilienceResults = scenario.execute();
             results.addAll(resilienceResults);
             results1.onNext(resilienceResults);
         }
-
+        Thread.sleep(sleepPeriod);
         ctfWireMock.stopWiremockServer();
-
-
-        //30s latency
-//        ctfWireMock = new CTFWireMock(configuration,30000);
-//
-//        Scenarios latencyScenariosWith30sLatency = new ResilienceCreator(configuration, reportPublisher,ctfWireMock).simulate30sLatencyScenarios();
-//
-//        for(Scenario scenario : latencyScenariosWith30sLatency.getScenarios()){
-//            List<ResilienceResult> resilienceResults = scenario.execute();
-//            results.addAll(resilienceResults);
-//            results1.onNext(resilienceResults);
-//        }
-//
-//        ctfWireMock.stopWiremockServer();
-
-        Thread.sleep(200000);
-//        reportPublisher.generateReport();
-        ctfWireMock.stopWiremockServer();
-
-
     }
 
     Observer<List<ResilienceResult>> getFirstObserver() {
@@ -173,6 +148,9 @@ public class ResilienceCtfApplication implements CommandLineRunner {
 
             @Override
             public void onNext(List<ResilienceResult> resilienceResults) {
+                for (ResilienceResult result : resilienceResults){
+                    System.out.println("result = " + result);
+                }
                 System.out.println("Added results");
             }
         };

@@ -2,15 +2,16 @@ package com.tekmentor.resiliencectf.report;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tekmentor.resiliencectf.report.model.ResilienceReport;
+import com.tekmentor.resiliencectf.scenario.model.ResilienceResult;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class JsonReportPublisher implements IReportPublisher {
-    private List<ResilienceReport> reports = new ArrayList<>();
+    private List<ResilienceResult> reports = new ArrayList<>();
 
     @Override
-    public void registerReport(ResilienceReport report) {
+    public void registerReport(ResilienceResult report) {
         reports.add(report);
     }
 
@@ -26,7 +27,7 @@ public class JsonReportPublisher implements IReportPublisher {
     }
 
     @Override
-    public void sendReport() {
-
+    public void sendReport(List<ResilienceResult> results) {
+        this.reports.addAll(results);
     }
 }

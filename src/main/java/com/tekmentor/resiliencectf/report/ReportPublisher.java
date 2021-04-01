@@ -1,6 +1,7 @@
 package com.tekmentor.resiliencectf.report;
 
 import com.tekmentor.resiliencectf.report.model.ResilienceReport;
+import com.tekmentor.resiliencectf.scenario.model.ResilienceResult;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -8,23 +9,23 @@ import java.util.List;
 
 @Component
 public class ReportPublisher implements IReportPublisher{
-    private List<ResilienceReport> reports = new ArrayList<>();
+    private List<ResilienceResult> reports = new ArrayList<>();
 
     @Override
-    public void registerReport(ResilienceReport report) {
+    public void registerReport(ResilienceResult report) {
         reports.add(report);
     }
 
     @Override
     public void generateReport() {
 
-        for (ResilienceReport report : reports){
+        for (ResilienceResult report : reports){
             System.out.println("report = " + report);
         }
     }
 
     @Override
-    public void sendReport() {
-
+    public void sendReport(List<ResilienceResult> results) {
+        this.reports.addAll(results);
     }
 }
