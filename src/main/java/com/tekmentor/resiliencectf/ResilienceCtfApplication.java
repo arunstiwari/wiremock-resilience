@@ -12,13 +12,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.core.env.Environment;
-
 
 @SpringBootApplication
 public class ResilienceCtfApplication implements CommandLineRunner {
-
-    private final Environment env;
 
     final IReportPublisher reportPublisher;
 
@@ -26,8 +22,7 @@ public class ResilienceCtfApplication implements CommandLineRunner {
 
     private static final Logger LOG =LoggerFactory.getLogger(ResilienceCtfApplication.class);
 
-    public ResilienceCtfApplication(Environment env, IReportPublisher reportPublisher, ResilienceConfiguration configuration) {
-        this.env = env;
+    public ResilienceCtfApplication( IReportPublisher reportPublisher, ResilienceConfiguration configuration) {
         this.reportPublisher = reportPublisher;
         this.configuration = configuration;
     }
