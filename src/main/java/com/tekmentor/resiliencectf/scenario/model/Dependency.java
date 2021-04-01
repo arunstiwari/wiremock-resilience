@@ -22,7 +22,7 @@ public class Dependency {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+        return new ToStringBuilder(this, ToStringStyle.NO_CLASS_NAME_STYLE)
                 .append("context", context)
                 .toString();
     }

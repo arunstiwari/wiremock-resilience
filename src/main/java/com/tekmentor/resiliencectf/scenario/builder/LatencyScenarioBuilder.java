@@ -4,7 +4,6 @@ import com.tekmentor.resiliencectf.config.ResilienceConfiguration;
 import com.tekmentor.resiliencectf.extensions.CTFResilienceRequest;
 import com.tekmentor.resiliencectf.extensions.CTFResponseTransformer;
 import com.tekmentor.resiliencectf.extensions.ContextMap;
-import com.tekmentor.resiliencectf.report.model.ContextReport;
 import com.tekmentor.resiliencectf.scenario.invoker.APIInvokerFactory;
 import com.tekmentor.resiliencectf.scenario.invoker.IRequestInvoker;
 import com.tekmentor.resiliencectf.scenario.model.Dependency;
@@ -34,9 +33,6 @@ public class LatencyScenarioBuilder implements IScenarioBuilder{
             String matchedContext = ResiliencyUtils.getServiceContext(dependencyUrl);
             LOG.info("matchedContext {}",matchedContext);
             result.setDependency(new Dependency(matchedContext));
-
-            ContextReport ctxReport = new ContextReport();
-            ctxReport.setErrorContext(matchedContext);
 
             //Resetting the transformer parameter
             CTFResponseTransformer ctfResponseTransformer = wireMockServer.getCtfResponseTransformer();

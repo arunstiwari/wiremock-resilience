@@ -1,33 +1,27 @@
 package com.tekmentor.resiliencectf.report;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tekmentor.resiliencectf.report.model.ResilienceReport;
-import com.tekmentor.resiliencectf.scenario.model.ResilienceResult;
+import com.tekmentor.resiliencectf.config.ResilienceConfiguration;
+import com.tekmentor.resiliencectf.scenario.model.ResilienceReport;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class JsonReportPublisher implements IReportPublisher {
-    private List<ResilienceResult> reports = new ArrayList<>();
-
-    @Override
-    public void registerReport(ResilienceResult report) {
-        reports.add(report);
+public class JsonReportPublisher extends BasePublisher {
+    private final Logger LOG = LoggerFactory.getLogger(JsonReportPublisher.class);
+    public JsonReportPublisher(ResilienceConfiguration configuration) {
+        super(configuration);
     }
 
     @Override
     public void generateReport() {
+        report = new ResilienceReport(this.configuration.getApiUrl(),this.summary, this.results);
         ObjectMapper mapper = new ObjectMapper();
         try{
-            String jsonStr =  mapper.writeValueAsString(reports);
-            System.out.println("jsonStr = " + jsonStr);
+            String jsonStr =  mapper.writeValueAsString(report);
+            LOG.info("----Reports ----- ");
+            LOG.info(jsonStr);
         }catch (Exception e){
-            e.printStackTrace();
+            LOG.error("Error while generating the report : {} ",e.getMessage());
         }
-    }
-
-    @Override
-    public void sendReport(List<ResilienceResult> results) {
-        this.reports.addAll(results);
     }
 }

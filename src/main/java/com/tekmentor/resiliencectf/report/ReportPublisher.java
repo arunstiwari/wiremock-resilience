@@ -1,31 +1,23 @@
 package com.tekmentor.resiliencectf.report;
 
-import com.tekmentor.resiliencectf.report.model.ResilienceReport;
-import com.tekmentor.resiliencectf.scenario.model.ResilienceResult;
+import com.tekmentor.resiliencectf.config.ResilienceConfiguration;
+import com.tekmentor.resiliencectf.scenario.model.ResilienceReport;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Component
-public class ReportPublisher implements IReportPublisher{
-    private List<ResilienceResult> reports = new ArrayList<>();
-
-    @Override
-    public void registerReport(ResilienceResult report) {
-        reports.add(report);
+public class ReportPublisher extends BasePublisher {
+    private final Logger LOG = LoggerFactory.getLogger(ReportPublisher.class);
+    public ReportPublisher(ResilienceConfiguration configuration){
+            super(configuration);
     }
 
     @Override
     public void generateReport() {
-
-        for (ResilienceResult report : reports){
-            System.out.println("report = " + report);
-        }
+        report = new ResilienceReport(this.configuration.getApiUrl(),this.summary, this.results);
+        LOG.info("----Reports ----- ");
+        LOG.info(report.toString());
     }
 
-    @Override
-    public void sendReport(List<ResilienceResult> results) {
-        this.reports.addAll(results);
-    }
 }
