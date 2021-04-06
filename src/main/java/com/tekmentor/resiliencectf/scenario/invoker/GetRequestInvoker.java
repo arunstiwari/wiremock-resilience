@@ -4,6 +4,8 @@ import com.tekmentor.resiliencectf.config.ResilienceConfiguration;
 import com.tekmentor.resiliencectf.scenario.model.ExecutionResponse;
 import com.tekmentor.resiliencectf.scenario.model.ResilienceResult;
 import com.tekmentor.resiliencectf.util.AvailableScenarios;
+import io.restassured.config.HttpClientConfig;
+import io.restassured.config.RestAssuredConfig;
 import io.restassured.response.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +22,11 @@ public class GetRequestInvoker implements IRequestInvoker {
 
         long startTime = System.currentTimeMillis();
         try {
-            Response response = given()
+
+            Response response = given().config(
+                                    RestAssuredConfig.config().
+                                                httpClient(HttpClientConfig.httpClientConfig()
+                                                        .setParam("http.socket.timeout",configuration.getTimeout())))
                     .log().all()
                     .header("Content-type", "application/json")
                     .header("scn", scn.getScenarioName())
@@ -37,13 +43,15 @@ public class GetRequestInvoker implements IRequestInvoker {
         }catch (Exception e){
             LOG.error("Error Executing scenarios {}",e);
             ExecutionResponse executionResponse = new ExecutionResponse(500,e.getMessage());
+            long endTime = System.currentTimeMillis();
+            result.setExecutionTime(endTime - startTime);
             result.setResponse(executionResponse);
             result.setException(e.getMessage());
+            return result;
         }
 
         long endTime = System.currentTimeMillis();
         result.setExecutionTime(endTime - startTime);
-
         return result;
     }
 }

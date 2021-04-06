@@ -1,5 +1,6 @@
 package com.tekmentor.resiliencectf;
 
+import com.tekmentor.resiliencectf.extensions.ContextMap;
 import com.tekmentor.resiliencectf.report.IReportPublisher;
 import com.tekmentor.resiliencectf.report.JsonReportPublisher;
 import com.tekmentor.resiliencectf.scenario.ResilienceCreator;
@@ -12,6 +13,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @SpringBootApplication
 public class ResilienceCtfApplication implements CommandLineRunner {
@@ -66,10 +70,15 @@ public class ResilienceCtfApplication implements CommandLineRunner {
         IReportPublisher reportPublisher = new JsonReportPublisher(configuration);
 
         LOG.info("resilienceConfiguration = {}",configuration);
+        List<ContextMap> contextMaps = new ArrayList<>() ;
+        contextMaps.add(new ContextMap("/orders/customers/cust-2232",5000));
+        contextMaps.add(new ContextMap("/shippings/89504b75-9071-4948-aa89-a3194affa335",90000));
+        configuration.setDependencies(contextMaps);
 
-        CTFWireMock ctfWireMock = new CTFWireMock(configuration);
+        CTFWireMock ctfWireMock;
 
         //Fault Scenarios
+        ctfWireMock = new CTFWireMock(configuration);
         Scenarios faultScenarios = new ResilienceCreator(configuration, reportPublisher,ctfWireMock).simulateAllFaultScenarios();
         executeScenarios( 0,faultScenarios,ctfWireMock);
 
@@ -77,7 +86,7 @@ public class ResilienceCtfApplication implements CommandLineRunner {
         //90s latency
         ctfWireMock = new CTFWireMock(configuration,90000);
         Scenarios latencyScenariosWith90sLatency = new ResilienceCreator(configuration, reportPublisher,ctfWireMock).simulateAllLoadLatencyScenarios();
-        executeScenarios( 90000,latencyScenariosWith90sLatency,ctfWireMock);
+        executeScenarios(configuration.getTimeout()+10, latencyScenariosWith90sLatency,ctfWireMock);
 
 
         //10s latency
@@ -101,7 +110,12 @@ public class ResilienceCtfApplication implements CommandLineRunner {
         for(Scenario scenario : scenarios.getScenarios()){
             scenario.execute();
         }
-        Thread.sleep(sleepPeriod);
-        ctfWireMock.stopWiremockServer();
+        try{
+            Thread.sleep(sleepPeriod);
+        }catch (InterruptedException e){
+            LOG.error("Thread was interrupted: Exception = {}",e);
+        }finally {
+            ctfWireMock.stopWiremockServer();
+        }
     }
 }

@@ -22,12 +22,13 @@ public class ResilienceCreator {
         this.wireMock = wireMock;
     }
 
-    public Scenarios simulateAllFaultScenarios() {
+    public Scenarios simulateAllFaultScenarios() throws InterruptedException {
         List<AvailableScenarios> faultsScenarios = AvailableScenarios.getAllFaultsScenarios();
+//        CTFWireMock ctfWireMock = new CTFWireMock(configuration);
         for (AvailableScenarios scn : faultsScenarios){
             this.scenarios.registerScenario(new Scenario(configuration, reportPublisher,scn,wireMock));
         }
-
+//        executeScenarios( 0,this.scenarios,ctfWireMock);
         return this.scenarios;
     }
 
@@ -51,5 +52,16 @@ public class ResilienceCreator {
         this.scenarios = new Scenarios();
         this.scenarios.registerScenario(new Scenario(configuration, reportPublisher,AvailableScenarios.TimeLatencyWith30SecondsAnd5RequestsPerSecond,wireMock));
         return this.scenarios;
+    }
+
+    private void executeScenarios(int sleepPeriod,
+                                  Scenarios scenarios,
+                                  CTFWireMock ctfWireMock) throws InterruptedException {
+
+        for(Scenario scenario : scenarios.getScenarios()){
+            scenario.execute();
+        }
+        Thread.sleep(sleepPeriod);
+        ctfWireMock.stopWiremockServer();
     }
 }

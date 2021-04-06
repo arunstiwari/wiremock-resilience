@@ -1,8 +1,6 @@
 package com.tekmentor.resiliencectf.scenario.builder;
 
 import com.tekmentor.resiliencectf.config.ResilienceConfiguration;
-import com.tekmentor.resiliencectf.scenario.invoker.APIInvokerFactory;
-import com.tekmentor.resiliencectf.scenario.invoker.IRequestInvoker;
 import com.tekmentor.resiliencectf.scenario.model.ResilienceResult;
 import com.tekmentor.resiliencectf.scenario.RunnableTask;
 import com.tekmentor.resiliencectf.util.AvailableScenarios;
@@ -27,9 +25,7 @@ public class LoadLatencyScenarioBuilder implements IScenarioBuilder {
     @Override
     public List<ResilienceResult> createScenario(ResilienceConfiguration configuration, AvailableScenarios scn, CTFWireMock wireMockServer) {
         LOG.info("Execution of {}  started",scn.getScenarioName());
-        IRequestInvoker invoker = APIInvokerFactory.getInvoker(configuration);
         List<ResilienceResult> results = new ArrayList<>();
-        ResilienceResult result = new ResilienceResult();
 
         Consumer<Integer> consumer = new Consumer<Integer>() {
 

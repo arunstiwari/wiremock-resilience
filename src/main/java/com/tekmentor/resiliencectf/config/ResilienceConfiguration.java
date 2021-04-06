@@ -1,10 +1,16 @@
 package com.tekmentor.resiliencectf.config;
 
+import com.tekmentor.resiliencectf.extensions.ContextMap;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Component
 @ConfigurationProperties(prefix = "resilience")
@@ -18,6 +24,13 @@ public class ResilienceConfiguration {
 
     @Value("${resilience.wiremock.root.dir:src/main/resources}")
     private String rootDir ;
+
+//
+//    @Value("${resilience.dependencies}")
+//    private Map<String, Integer> dependencies;
+//    @Value("${resilience.dependencies}")
+    private List<ContextMap> dependencies = new ArrayList<>();
+
 
     @Value("${resilience.dependencyUrls}")
     private String[] thirdpartyUrls;
@@ -38,6 +51,9 @@ public class ResilienceConfiguration {
 
     @Value("${resilience.api.dependency.latency.threshold}")
     private int backUpdependentApiLatencyThreshold;
+
+    @Value("${resilience.timeout:60000}")
+    private int timeout;
 
     public int getPort() {
         return port;
@@ -107,6 +123,14 @@ public class ResilienceConfiguration {
         return dependentApiLatencyThreshold;
     }
 
+    public List<ContextMap> getDependencies() {
+        return dependencies;
+    }
+
+    public void setDependencies(List<ContextMap> dependencies) {
+        this.dependencies = dependencies;
+    }
+
     public void setDependentApiLatencyThreshold(int dependentApiLatencyThreshold) {
         this.dependentApiLatencyThreshold = dependentApiLatencyThreshold;
     }
@@ -117,6 +141,14 @@ public class ResilienceConfiguration {
 
     public void setBackUpdependentApiLatencyThreshold(int backUpdependentApiLatencyThreshold) {
         this.backUpdependentApiLatencyThreshold = backUpdependentApiLatencyThreshold;
+    }
+
+    public int getTimeout() {
+        return timeout;
+    }
+
+    public void setTimeout(int timeout) {
+        this.timeout = timeout;
     }
 
     @Override
@@ -131,6 +163,8 @@ public class ResilienceConfiguration {
                 .append("apiLatencyThreshold", apiLatencyThreshold)
                 .append("dependentApiLatencyThreshold", dependentApiLatencyThreshold)
                 .append("backUpdependentApiLatencyThreshold",backUpdependentApiLatencyThreshold)
+                .append("dependencies", dependencies)
                 .toString();
     }
+
 }

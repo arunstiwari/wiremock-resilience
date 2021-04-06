@@ -26,26 +26,29 @@ public class LatencyScenarioBuilder implements IScenarioBuilder{
         LOG.info("In createScenario method");
         IRequestInvoker invoker = APIInvokerFactory.getInvoker(configuration);
         List<ResilienceResult> results = new ArrayList<>();
-        ResilienceResult result = new ResilienceResult();
-        Arrays.stream(configuration.getThirdPartyUrls()).forEach(dependencyUrl -> {
-            LOG.info(" depdendencyUrl {}",dependencyUrl);
 
+        Arrays.stream(configuration.getThirdPartyUrls()).forEach(dependencyUrl -> {
+            LOG.info(" Executing scenario: {} for depdendencyUrl {}",scn.getScenarioName(),dependencyUrl);
+            ResilienceResult result = new ResilienceResult();
             String matchedContext = ResiliencyUtils.getServiceContext(dependencyUrl);
             LOG.info("matchedContext {}",matchedContext);
             result.setDependency(new Dependency(matchedContext));
 
             //Resetting the transformer parameter
+            CTFResilienceRequest ctfResilienceRequest = new CTFResilienceRequest();
             CTFResponseTransformer ctfResponseTransformer = wireMockServer.getCtfResponseTransformer();
-            CTFResilienceRequest ctfResilienceRequest = ctfResponseTransformer.getCtfResilienceRequest();
-            ctfResilienceRequest.registerContext(matchedContext, new ContextMap(scn.getScenarioName(), scn.getLatencyPeriod()));
+
+            ContextMap contextMap = configuration.getDependencies().stream().filter(cm -> cm.getContext().equals(matchedContext)).findFirst().get();
+            LOG.info("contextMap found : {}",contextMap);
+
+            ctfResilienceRequest.registerContext(matchedContext, contextMap !=null?contextMap: new ContextMap(matchedContext,0) );
             ctfResponseTransformer.setCtfResilienceRequest(ctfResilienceRequest);
-            configuration.setDependentApiLatencyThreshold(configuration.getBackUpdependentApiLatencyThreshold());
+            invoker.invoke(configuration,scn,result);
+            results.add(result);
+            LOG.info("Exiting executing scenario: {} for depdendencyUrl {}",scn.getScenarioName(),dependencyUrl);
         });
 
-        invoker.invoke(configuration,scn,result);
-        results.add(result);
-
-        LOG.info("Exiting createScenario method");
+        LOG.info("Exiting overall createScenario method");
         return results;
     }
 }

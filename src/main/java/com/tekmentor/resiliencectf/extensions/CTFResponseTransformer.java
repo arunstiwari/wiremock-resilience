@@ -25,10 +25,9 @@ public class CTFResponseTransformer extends ResponseDefinitionTransformer {
         try {
             if (ctfResilienceRequest.getContexts().containsKey(request.getUrl())){
                 ContextMap contextMap = ctfResilienceRequest.getContexts().get(request.getUrl());
-//                contextMap.getScn()
-//                Integer latency = ctfResilienceRequest.getContexts().get(request.getUrl());
-                LOG.info("Going to sleep for {} milliseconds",ctfResilienceRequest.getLatencyPeriod());
-                Thread.sleep(ctfResilienceRequest.getLatencyPeriod());
+                LOG.info("-----contextMap ----{} ",contextMap);
+                LOG.info("Going to sleep for {} milliseconds",contextMap.getLatency());
+                Thread.sleep(contextMap.getLatency());
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
