@@ -72,7 +72,7 @@ public class ResilienceCtfApplication implements CommandLineRunner {
         LOG.info("resilienceConfiguration = {}",configuration);
         List<ContextMap> contextMaps = new ArrayList<>() ;
         contextMaps.add(new ContextMap("/orders/customers/cust-2232",5000));
-        contextMaps.add(new ContextMap("/shippings/89504b75-9071-4948-aa89-a3194affa335",90000));
+        contextMaps.add(new ContextMap("/shippings/89504b75-9071-4948-aa89-a3194affa335",10000));
         configuration.setDependencies(contextMaps);
 
         CTFWireMock ctfWireMock;

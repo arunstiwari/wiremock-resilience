@@ -5,6 +5,8 @@ import com.tekmentor.resiliencectf.scenario.model.ResilienceReport;
 import com.tekmentor.resiliencectf.scenario.model.ResilienceResult;
 import com.tekmentor.resiliencectf.scenario.model.SummaryReport;
 import com.tekmentor.resiliencectf.util.AvailableScenarios;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import rx.Observer;
 import rx.subjects.PublishSubject;
 
@@ -15,6 +17,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public abstract class BasePublisher implements IReportPublisher{
+    private final static Logger LOG = LoggerFactory.getLogger(BasePublisher.class);
 
     PublishSubject<List<ResilienceResult>> reports;
     List<ResilienceResult> results = new ArrayList<>();
@@ -45,12 +48,12 @@ public abstract class BasePublisher implements IReportPublisher{
 
             @Override
             public void onCompleted() {
-                System.out.println("Completed");
+                LOG.info("Completed");
             }
 
             @Override
             public void onError(Throwable throwable) {
-                System.out.println("Error");
+                LOG.info("Error");
             }
 
             @Override
@@ -63,14 +66,19 @@ public abstract class BasePublisher implements IReportPublisher{
                     ResilienceResult max = resilienceResults.stream().max(Comparator.comparing(ResilienceResult::getExecutionTime)).get();
                     SummaryReport summaryReport = new SummaryReport(resilienceResult.getScn(), averageTime, min.getExecutionTime(), max.getExecutionTime(), resilienceResults.size());
                     summary.add(summaryReport);
+                    LOG.info("---summary ---{} ",summary);
                 }
-                for (ResilienceResult result : resilienceResults){
-                    System.out.println("result = " + result);
-                }
-                System.out.println("Added results");
+//                for (ResilienceResult result : resilienceResults){
+//                    LOG.info("result = {}" , result);
+//                }
+                LOG.info("Added results");
             }
 
             public boolean isLoadScenario(ResilienceResult result){
+                LOG.info("isLoadScenario: result.scn = {} ",result.getScn());
+                LOG.info("TimeLatencyWith10SecondsAnd5RequestsPerSecond = {} ",AvailableScenarios.TimeLatencyWith10SecondsAnd5RequestsPerSecond.getScenarioName());
+                LOG.info("AvailableScenarios.TimeLatencyWith30SecondsAnd5RequestsPerSecond = {} ",AvailableScenarios.TimeLatencyWith30SecondsAnd5RequestsPerSecond.getScenarioName());
+
                 return result.getScn().equals(AvailableScenarios.TimeLatencyWith10SecondsAnd5RequestsPerSecond.getScenarioName()) ||
                         result.getScn().equals(AvailableScenarios.TimeLatencyWith30SecondsAnd5RequestsPerSecond.getScenarioName());
             }

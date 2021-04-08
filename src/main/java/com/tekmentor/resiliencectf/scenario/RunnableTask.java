@@ -5,7 +5,7 @@ import java.util.TimerTask;
 import java.util.function.Consumer;
 
 public class RunnableTask extends TimerTask {
-    private Consumer consumer;
+    private Consumer<Integer> consumer;
 
     public RunnableTask(final Consumer consumer) {
         this.consumer = consumer;

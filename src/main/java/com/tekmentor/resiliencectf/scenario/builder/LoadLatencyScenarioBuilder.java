@@ -33,33 +33,35 @@ public class LoadLatencyScenarioBuilder implements IScenarioBuilder {
             public void accept(Integer i) {
                 LatencyScenarioBuilder s1 = new LatencyScenarioBuilder();
                 System.out.println("Runnable Task ScenarioName " + scn.getScenarioName() + "-" + i);
-                Thread.currentThread().setName(scn.getScenarioName()+"-"+i);
+                Thread.currentThread().setName(scn.getScenarioName() + "-" + i);
                 LOG.info("Executing the Runnable thread for scenario {}", scn.getScenarioName() + "-" + i);
-                try{
+                try {
                     List<ResilienceResult> resultList = s1.createScenario(configuration, scn, wireMockServer);
                     results.addAll(resultList);
-                }catch (Exception e){
-                    LOG.error("Error executing scenarios = {}",e);
+                } catch (Exception e1) {
+                    LOG.error("Error executing scenarios = {}", e1);
                     executor.shutdown();
                 }
                 LOG.info("Finished the execution of Runnable thread for scenario {}", scn.getScenarioName());
             }
         };
-
         RunnableTask repeatedTask = new RunnableTask(consumer);
-        long period = 1000L;
-        this.executor.scheduleAtFixedRate(repeatedTask, 0, period, TimeUnit.MILLISECONDS);
+
+        this.executor.scheduleAtFixedRate(repeatedTask, 0, configuration.getSuccessiveExecutionPeriod(), TimeUnit.MILLISECONDS);
+
         try{
-            Thread.sleep(120000);
+            Thread.sleep(configuration.getExecutionDuration());
         }catch (InterruptedException e) {
-            LOG.error("Sleep time interrupted > 60s {}",e.getMessage());
-            executor.shutdown();
+            LOG.error("Scheduler has completed the execution duration : {}",configuration.getExecutionDuration());
+            LOG.error("Exception message : {}",e.getMessage());
         }finally {
             LOG.info("Finally going to shutdown the executor");
             executor.shutdown();
         }
-        LOG.info("Execution of {} finished",scn.getScenarioName());
 
+        LOG.info("Execution of {} finished",scn.getScenarioName());
+        LOG.info("results size : {}",results.size());
         return results;
     }
+
 }

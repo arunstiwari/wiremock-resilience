@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 public class LatencyScenarioBuilder implements IScenarioBuilder{
     private static Logger LOG = LoggerFactory.getLogger(LatencyScenarioBuilder.class);
@@ -38,7 +39,7 @@ public class LatencyScenarioBuilder implements IScenarioBuilder{
             CTFResilienceRequest ctfResilienceRequest = new CTFResilienceRequest();
             CTFResponseTransformer ctfResponseTransformer = wireMockServer.getCtfResponseTransformer();
 
-            ContextMap contextMap = configuration.getDependencies().stream().filter(cm -> cm.getContext().equals(matchedContext)).findFirst().get();
+            ContextMap contextMap = getContextMap(configuration, matchedContext,scn);
             LOG.info("contextMap found : {}",contextMap);
 
             ctfResilienceRequest.registerContext(matchedContext, contextMap !=null?contextMap: new ContextMap(matchedContext,0) );
@@ -50,5 +51,16 @@ public class LatencyScenarioBuilder implements IScenarioBuilder{
 
         LOG.info("Exiting overall createScenario method");
         return results;
+    }
+
+    private ContextMap getContextMap(ResilienceConfiguration configuration, String matchedContext, AvailableScenarios scn) {
+
+        if (scn.isLatencyScenario() && scn.isLoad()) {
+            Optional<ContextMap> contextMap = configuration.getDependencies().stream().filter(cm -> cm.getContext().equals(matchedContext)).findFirst();
+            return contextMap.isPresent()  ? contextMap.get(): new ContextMap(matchedContext, scn.getLatencyPeriod());
+        }else {
+            ContextMap contextMap = new ContextMap(matchedContext, configuration.getTimeout()+10);
+            return contextMap;
+        }
     }
 }

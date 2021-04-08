@@ -55,6 +55,15 @@ public class ResilienceConfiguration {
     @Value("${resilience.timeout:60000}")
     private int timeout;
 
+    @Value("${resilience.execution.period:4000}")
+    private long executionPeriod;
+
+    @Value("${resilience.execution.duration:120000}")
+    private long executionDuration;
+
+    @Value("${resilience.thread.poolsize:5}")
+    private int threadPoolSize;
+
     public int getPort() {
         return port;
     }
@@ -151,6 +160,26 @@ public class ResilienceConfiguration {
         this.timeout = timeout;
     }
 
+    public long getSuccessiveExecutionPeriod() {
+        return this.executionPeriod;
+    }
+
+    public void setExecutionPeriod(long executionPeriod) {
+        this.executionPeriod = executionPeriod;
+    }
+
+    public long getExecutionDuration() {
+        return this.executionDuration;
+    }
+
+    public void setExecutionDuration(long executionDuration) {
+        this.executionDuration = executionDuration;
+    }
+
+    public int getThreadPoolSize() {
+        return this.threadPoolSize;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
@@ -164,6 +193,9 @@ public class ResilienceConfiguration {
                 .append("dependentApiLatencyThreshold", dependentApiLatencyThreshold)
                 .append("backUpdependentApiLatencyThreshold",backUpdependentApiLatencyThreshold)
                 .append("dependencies", dependencies)
+                .append("executionPeriod",executionPeriod)
+                .append("executionDuration",executionDuration)
+                .append("threadPoolSize", threadPoolSize)
                 .toString();
     }
 

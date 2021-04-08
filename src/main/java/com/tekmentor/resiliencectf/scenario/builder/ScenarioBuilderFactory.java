@@ -12,7 +12,7 @@ public class ScenarioBuilderFactory {
     public static IScenarioBuilder scenarioBuilder(ResilienceConfiguration configuration, AvailableScenarios scenarios){
 
        if (scenarios.isLoad()){
-           ScheduledExecutorService executor = Executors.newScheduledThreadPool(6);
+           ScheduledExecutorService executor = Executors.newScheduledThreadPool(configuration.getThreadPoolSize());
            return new LoadLatencyScenarioBuilder(executor);
         } else if (scenarios.isLatencyScenario()){
            return new LatencyScenarioBuilder();
