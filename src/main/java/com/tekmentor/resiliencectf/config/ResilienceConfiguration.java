@@ -8,9 +8,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Component
 @ConfigurationProperties(prefix = "resilience")
@@ -25,15 +23,7 @@ public class ResilienceConfiguration {
     @Value("${resilience.wiremock.root.dir:src/main/resources}")
     private String rootDir ;
 
-//
-//    @Value("${resilience.dependencies}")
-//    private Map<String, Integer> dependencies;
-//    @Value("${resilience.dependencies}")
     private List<ContextMap> dependencies = new ArrayList<>();
-
-
-    @Value("${resilience.dependencyUrls}")
-    private String[] thirdpartyUrls;
 
     @Value("${resilience.url}")
     private String apiUrl;
@@ -86,14 +76,6 @@ public class ResilienceConfiguration {
 
     public void setRootDir(String rootDir) {
         this.rootDir = rootDir;
-    }
-
-    public String[] getThirdPartyUrls() {
-        return  this.thirdpartyUrls;
-    }
-
-    public void setThirdpartyUrls(String[] thirdpartyUrls) {
-        this.thirdpartyUrls = thirdpartyUrls;
     }
 
     public String getApiUrl() {
@@ -185,7 +167,6 @@ public class ResilienceConfiguration {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
                 .append("wiremockhost", host)
                 .append("port", port)
-                .append("thirdpartyUrls", thirdpartyUrls)
                 .append("apiUrl", apiUrl)
                 .append("requestType", requestType)
                 .append("requestBody", requestBody)

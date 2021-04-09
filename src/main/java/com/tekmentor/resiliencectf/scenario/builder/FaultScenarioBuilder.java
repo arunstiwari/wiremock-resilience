@@ -18,7 +18,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class FaultScenarioBuilder implements IScenarioBuilder{
@@ -29,12 +28,12 @@ public class FaultScenarioBuilder implements IScenarioBuilder{
         LOG.info("In createScenario method");
         IRequestInvoker invoker = APIInvokerFactory.getInvoker(configuration);
         List<ResilienceResult> results = new ArrayList<>();
-        Arrays.stream(configuration.getThirdPartyUrls()).forEach(dependencyUrl -> {
 
+        configuration.getDependencies().forEach(dependency -> {
             WireMock.reset();
             ResilienceResult result = new ResilienceResult();
-            String matchedContext = ResiliencyUtils.getServiceContext(dependencyUrl);
 
+            String matchedContext = ResiliencyUtils.getServiceContext(dependency.getContext());
             result.setDependency(new Dependency(matchedContext));
 
             //Resetting the transformer parameter

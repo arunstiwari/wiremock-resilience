@@ -70,10 +70,10 @@ public class ResilienceCtfApplication implements CommandLineRunner {
         IReportPublisher reportPublisher = new JsonReportPublisher(configuration);
 
         LOG.info("resilienceConfiguration = {}",configuration);
-        List<ContextMap> contextMaps = new ArrayList<>() ;
-        contextMaps.add(new ContextMap("/orders/customers/cust-2232",5000));
-        contextMaps.add(new ContextMap("/shippings/89504b75-9071-4948-aa89-a3194affa335",10000));
-        configuration.setDependencies(contextMaps);
+//        List<ContextMap> contextMaps = new ArrayList<>() ;
+//        contextMaps.add(new ContextMap("/orders/customers/cust-2232",5000));
+//        contextMaps.add(new ContextMap("/shippings/89504b75-9071-4948-aa89-a3194affa335",10000));
+//        configuration.setDependencies(contextMaps);
 
         CTFWireMock ctfWireMock;
 

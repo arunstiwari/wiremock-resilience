@@ -34,7 +34,7 @@ public class ContextMap {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
-                .append("scn", context)
+                .append("context", context)
                 .append("latency", latency)
                 .toString();
     }

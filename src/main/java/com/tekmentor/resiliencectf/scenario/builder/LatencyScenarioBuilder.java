@@ -15,7 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,10 +27,10 @@ public class LatencyScenarioBuilder implements IScenarioBuilder{
         IRequestInvoker invoker = APIInvokerFactory.getInvoker(configuration);
         List<ResilienceResult> results = new ArrayList<>();
 
-        Arrays.stream(configuration.getThirdPartyUrls()).forEach(dependencyUrl -> {
-            LOG.info(" Executing scenario: {} for depdendencyUrl {}",scn.getScenarioName(),dependencyUrl);
+        configuration.getDependencies().forEach(dependency -> {
+            LOG.info(" Executing scenario: {} for depdendencyUrl {}",scn.getScenarioName(),dependency.getContext());
             ResilienceResult result = new ResilienceResult();
-            String matchedContext = ResiliencyUtils.getServiceContext(dependencyUrl);
+            String matchedContext = ResiliencyUtils.getServiceContext(dependency.getContext());
             LOG.info("matchedContext {}",matchedContext);
             result.setDependency(new Dependency(matchedContext));
 
@@ -46,7 +45,7 @@ public class LatencyScenarioBuilder implements IScenarioBuilder{
             ctfResponseTransformer.setCtfResilienceRequest(ctfResilienceRequest);
             invoker.invoke(configuration,scn,result);
             results.add(result);
-            LOG.info("Exiting executing scenario: {} for depdendencyUrl {}",scn.getScenarioName(),dependencyUrl);
+            LOG.info("Exiting executing scenario: {} for depdendencyUrl {}",scn.getScenarioName(),dependency.getContext());
         });
 
         LOG.info("Exiting overall createScenario method");

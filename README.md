@@ -1,5 +1,5 @@
 ### 1. Resilience Test Scenarios
-+ -Dresilience.wiremock.port=8092 -Dresilience.wiremock.host=localhost -Dresilience.dependencyUrls=http://localhost:8092/orders/customers/cust-2232,http://localhost:8092/shippings/89504b75-9071-4948-aa89-a3194affa335 -Dresilience.url=http://localhost:8084/customers/cust-2232/orders -Dresilience.request.type=GET -Dresilience.request.body= -Dresilience.api.latency.threshold=2000 -Dresilience.api.dependency.latency.threshold=300
++ -Dresilience.wiremock.port=8092 -Dresilience.wiremock.host=localhost  -Dresilience.url=http://localhost:8084/customers/cust-2232/orders -Dresilience.request.type=GET -Dresilience.request.body= -Dresilience.api.latency.threshold=2000 -Dresilience.api.dependency.latency.threshold=300
 + `Scenario 1`
 ```java
 /**
